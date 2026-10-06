@@ -1,12 +1,12 @@
 ---
 name: tech-manual-report
 description: >-
-  Apply the "Technical Manual" visual theme to an HTML and/or PDF report — warm paper background, navy ink, Manrope headings, Source Serif italic summary lines, JetBrains Mono letterspaced labels, dark part-divider pages with giant numerals, numbered sections, FIG.-labelled panels, callouts, tables and code blocks. Theme only: it changes how a document looks, never what it says. Use when the user wants a report, manual, handbook or write-up produced as a styled HTML or PDF in this theme (e.g. "in the technical manual style", "like the Pi Durable PDF"), whether they supply the content or ask for it to be written separately.
+  Apply a visual theme to an HTML and/or PDF report. Two themes: "manual" (Technical Manual look — warm paper, navy ink, Manrope headings, Source Serif italic summary lines, JetBrains Mono labels, dark part-divider pages with giant numerals) and "minimal" (modern, clean and minimalist — white page, Inter throughout, one accent colour per part, soft rounded panels, generous spacing). Theme only — it changes how a document looks, never what it says. Use when the user wants a report, manual, handbook or write-up produced as a styled HTML or PDF, names either theme, or asks for the "technical manual style" or a clean minimal report.
 ---
 
-# Technical Manual report theme
+# Report themes
 
-This skill is a **visual theme and a builder**. It turns content into a themed web page and a paginated US‑Letter PDF (running headers, page numbers, contents page with real page numbers, `(p. N)` cross-references). It has **no opinion about content or wording.**
+This skill is a set of **visual themes and a builder**. It turns content into a themed web page and a paginated US‑Letter PDF (running headers, page numbers, contents page with real page numbers, `(p. N)` cross-references). It has **no opinion about content or wording.**
 
 ## Scope: theme only
 
@@ -17,35 +17,48 @@ This skill is a **visual theme and a builder**. It turns content into a themed w
 - If the user also wants the content *written* (research, drafting), that is a separate step with its own style requirements. Do that first, then apply this theme to the result.
 - Nothing in `assets/template.html` or `references/components.md` is wording to reuse; it is placeholder text showing markup only.
 
+## Themes
+
+| Theme | Look | Best for |
+|---|---|---|
+| `manual` (default) | Warm paper, navy ink, Manrope / Source Sans 3 / Source Serif italic / JetBrains Mono, dark part-divider pages, letterspaced mono labels | Technical manuals, engineering references, dense documents |
+| `minimal` | White page, Inter throughout, one accent colour per part, tinted part pages, rounded soft panels, generous spacing | Reports, briefings, proposals, anything meant to be pleasant to read |
+
+**Choosing a theme:** use the theme the user names. If they haven't named one, ask once which they want (show the two rows above); if they have no preference, use `manual`. Run `python3 <skill>/scripts/build.py --list-themes` to see installed themes.
+
+Both themes use the **same HTML and class names**, so a report can be rebuilt in the other theme without editing it. Set the theme with `--theme <name>` on the build command, or with `<meta name="report-theme" content="minimal">` in the report's `<head>` (the flag wins).
+
 ## Files
 
 | Path | What it is |
 |---|---|
-| `assets/theme.css` | The theme (screen + `@media print` + `@page`). Do not edit per report; add a small `<style>` in the report if a one-off tweak is needed. |
+| `assets/themes/<name>/theme.css` | A theme's stylesheet (screen + `@media print` + `@page`). Do not edit per report; add a small `<style>` in the report if a one-off tweak is needed. |
+| `assets/themes/<name>/theme.json` | The theme's fonts and running header/footer style, read by `build.py`. |
 | `assets/template.html` | Every component with placeholder text. Copy the parts you need. |
-| `assets/fonts/` | Bundled static TTFs (Manrope, Source Sans 3, Source Serif 4 italic, JetBrains Mono) with their OFL licenses. |
+| `assets/fonts/` | Bundled static TTFs for both themes (Manrope, Source Sans 3, Source Serif 4 italic, Inter, JetBrains Mono) with their OFL licenses. |
 | `scripts/build.py` | Injects theme + fonts and writes standalone HTML and/or renders PDF. |
 | `references/components.md` | Markup, class names and palette for each component. |
-| `examples/example.pdf`, `examples/example.html` | The template built, to show the look. |
+| `examples/example.*`, `examples/example-minimal.*` | The template built in each theme. |
 
 ## Workflow
 
 1. **Get the content** (the user's file, text, or an existing document). Work out its structure as it is: parts → sections → subsections. Don't restructure it.
-2. **Start from `assets/template.html`.** Keep `<!-- THEME -->`, set `<title>`, `<meta name="doc-short">` (top-right running head) and `<meta name="doc-footer">` (bottom-left footer) from the user's document title. Delete placeholder components that the content does not use.
-3. **Pour the content into the components** in `references/components.md`, preserving the text exactly (escape `<`, `>`, `&`). Give each part its colour class `c-blue, c-teal, c-violet, c-green, c-amber, c-rose, c-indigo, c-plum, c-forest, c-slate` in order, on the part divider, its sections and its contents entry.
+2. **Pick the theme** (see Themes above).
+3. **Start from `assets/template.html`.** Keep `<!-- THEME -->`, set `<title>`, `<meta name="doc-short">` (top-right running head) and `<meta name="doc-footer">` (bottom-left footer) from the user's document title. Delete placeholder components that the content does not use.
+4. **Pour the content into the components** in `references/components.md`, preserving the text exactly (escape `<`, `>`, `&`). Give each part its colour class `c-blue, c-teal, c-violet, c-green, c-amber, c-rose, c-indigo, c-plum, c-forest, c-slate` in order, on the part divider, its sections and its contents entry.
    - Short document (1–4 pages): skip the contents page and part dividers; use a title block plus `.chapter` sections.
-4. **Build:**
+5. **Build:**
    ```bash
-   python3 <skill>/scripts/build.py report.html --html out.html --pdf out.pdf
+   python3 <skill>/scripts/build.py report.html --theme minimal --html out.html --pdf out.pdf
    ```
    - `--fonts google` (default for HTML) or `--fonts embed` for a fully offline single file (~2.7 MB).
    - PDF engine: `weasyprint` (default, full support) or `--engine chrome` (no running section title, no contents/cross-reference page numbers). Install with `brew install weasyprint` or `pip install weasyprint`.
    - Never overwrite the source file with built output.
-5. **Verify visually.** Render pages to PNG and look at them (`pdftoppm -r 60 -png out.pdf <dir>/p`):
-   cover fits on one page; part dividers are full dark pages; contents page numbers are filled; no SVG shapes render black; no overflow in panels; no heading stranded at the bottom of a page. For HTML, check desktop and phone width.
-6. Tell the user where the files are.
+6. **Verify visually.** Render pages to PNG and look at them (`pdftoppm -r 60 -png out.pdf <dir>/p`):
+   cover fits on one page; part dividers fill their page (dark in `manual`, tinted in `minimal`); contents page numbers are filled; no SVG shapes render black; no overflow in panels; no heading stranded at the bottom of a page. For HTML, check desktop and phone width.
+7. Tell the user where the files are and which theme was used.
 
 ## Look rules
 
-- Palette and typography are fixed (see `references/components.md`). Don't add colour backgrounds to body text, emoji, shadows or gradients; the style is flat and hairline-ruled.
+- Each theme's palette and typography are fixed (see `references/components.md`); don't mix them. Don't add colour backgrounds to body text, emoji, shadows or gradients; the style is flat and hairline-ruled.
 - In inline SVG, set colours with the kit classes or literal hex in `style="fill:#…"`; never `var(--…)` (PDF engines ignore it). `build.py` copies the SVG kit styles into each `<svg class="diagram">`.

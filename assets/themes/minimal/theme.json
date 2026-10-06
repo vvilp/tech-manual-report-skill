@@ -1,0 +1,18 @@
+{
+  "name": "minimal",
+  "description": "Minimal: white page, Inter throughout, one accent colour per part, generous spacing, rounded soft panels.",
+  "fonts": [
+    ["Inter", "Inter-400", 400, "normal"],
+    ["Inter", "Inter-400-italic", 400, "italic"],
+    ["Inter", "Inter-500", 500, "normal"],
+    ["Inter", "Inter-600", 600, "normal"],
+    ["Inter", "Inter-700", 700, "normal"],
+    ["Inter", "Inter-800", 800, "normal"],
+    ["JetBrains Mono", "JetBrainsMono-400", 400, "normal"],
+    ["JetBrains Mono", "JetBrainsMono-500", 500, "normal"]
+  ],
+  "google_fonts": "family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500",
+  "running_head": "font:500 7.5pt 'Inter',sans-serif;color:#8b919c;vertical-align:bottom;padding-bottom:10pt;",
+  "running_foot": "font:500 7.5pt 'Inter',sans-serif;color:#8b919c;vertical-align:top;padding-top:16pt;",
+  "foot_uppercase": false
+}

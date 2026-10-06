@@ -1,0 +1,23 @@
+{
+  "name": "manual",
+  "description": "Technical Manual: warm paper, navy ink, Manrope / Source Sans 3 / Source Serif 4 italic / JetBrains Mono, dark part dividers.",
+  "fonts": [
+    ["Manrope", "Manrope-500", 500, "normal"],
+    ["Manrope", "Manrope-600", 600, "normal"],
+    ["Manrope", "Manrope-700", 700, "normal"],
+    ["Manrope", "Manrope-800", 800, "normal"],
+    ["Source Sans 3", "SourceSans3-400", 400, "normal"],
+    ["Source Sans 3", "SourceSans3-400-italic", 400, "italic"],
+    ["Source Sans 3", "SourceSans3-600", 600, "normal"],
+    ["Source Sans 3", "SourceSans3-700", 700, "normal"],
+    ["Source Serif 4", "SourceSerif4-400-italic", 400, "italic"],
+    ["Source Serif 4", "SourceSerif4-500-italic", 500, "italic"],
+    ["JetBrains Mono", "JetBrainsMono-400", 400, "normal"],
+    ["JetBrains Mono", "JetBrainsMono-500", 500, "normal"],
+    ["JetBrains Mono", "JetBrainsMono-700", 700, "normal"]
+  ],
+  "google_fonts": "family=Manrope:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@1,8..60,400;1,8..60,500&family=JetBrains+Mono:wght@400;500;700",
+  "running_head": "font:400 7.5pt 'Source Sans 3',sans-serif;color:#5f6772;vertical-align:bottom;padding-bottom:8pt;",
+  "running_foot": "font:400 6.8pt 'JetBrains Mono',monospace;letter-spacing:.22em;color:#878e97;vertical-align:top;padding-top:15pt;",
+  "foot_uppercase": true
+}

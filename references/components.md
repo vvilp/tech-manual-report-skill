@@ -2,7 +2,9 @@
 
 All markup lives inside `<body class="manual">`. `assets/template.html` shows every piece in context. All text in the snippets below is placeholder markup; the user's own text always replaces it, unchanged.
 
-## Palette
+The markup is the same for every theme; only the look changes. The palette below is the `manual` theme's. The `minimal` theme keeps the same class names with its own colours (white `#ffffff` page, ink `#0f1419`, panels `#f7f8fa`, hairlines `#eaecf0`; parts blue `#2563eb`, teal `#0d9488`, violet `#7c3aed`, green `#16a34a`, amber `#d97706`, rose `#e11d48`, indigo `#4f46e5`, plum `#c026d3`, forest `#15803d`, slate `#475569`).
+
+## Palette (manual theme)
 
 | Token | Hex | Use |
 |---|---|---|
