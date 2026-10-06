@@ -1,6 +1,7 @@
 ---
 name: tech-manual-report
-description: Apply the "Technical Manual" visual theme to an HTML and/or PDF report — warm paper background, navy ink, Manrope headings, Source Serif italic summary lines, JetBrains Mono letterspaced labels, dark part-divider pages with giant numerals, numbered sections, FIG.-labelled panels, callouts, tables and code blocks. Theme only: it changes how a document looks, never what it says. Use when the user wants a report, manual, handbook or write-up produced as a styled HTML or PDF in this theme (e.g. "in the technical manual style", "like the Pi Durable PDF"), whether they supply the content or ask for it to be written separately.
+description: >-
+  Apply the "Technical Manual" visual theme to an HTML and/or PDF report — warm paper background, navy ink, Manrope headings, Source Serif italic summary lines, JetBrains Mono letterspaced labels, dark part-divider pages with giant numerals, numbered sections, FIG.-labelled panels, callouts, tables and code blocks. Theme only: it changes how a document looks, never what it says. Use when the user wants a report, manual, handbook or write-up produced as a styled HTML or PDF in this theme (e.g. "in the technical manual style", "like the Pi Durable PDF"), whether they supply the content or ask for it to be written separately.
 ---
 
 # Technical Manual report theme
