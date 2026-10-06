@@ -36,7 +36,7 @@ See `examples/` for the full sample in each theme.
 Clone into your personal skills folder (all projects):
 
 ```bash
-git clone https://github.com/<you>/tech-manual-report ~/.claude/skills/tech-manual-report
+git clone https://github.com/vvilp/tech-manual-report-skill ~/.claude/skills/tech-manual-report
 ```
 
 Or clone into one project's `.claude/skills/` folder instead.
@@ -61,6 +61,7 @@ python3 scripts/build.py --list-themes
 
 | Option | Effect |
 |---|---|
+| `--keep-emoji` | Reports contain no emoji by default; the build strips them and prints a warning. This flag leaves them in. |
 | `--theme manual` / `--theme minimal` | Chooses the theme. Without it, `<meta name="report-theme" content="…">` in the source is used, then `manual`. |
 | `--fonts google` | Default for HTML. Small file; loads fonts from Google Fonts. |
 | `--fonts embed` | Puts the fonts inside the HTML file. Works offline; about 2–3 MB. |

@@ -150,6 +150,21 @@ def inline_svg_kit(doc: str, theme: str) -> str:
                   lambda m: m.group(1) + style, doc)
 
 
+EMOJI_RE = re.compile(
+    "[\U0001F000-\U0001FAFF\u2600-\u27BF\u2B50\u2B55\u2B1B\u2B1C\u231A\u231B\u23E9-\u23FA\u24C2"
+    "\u2934\u2935\u3030\u303D\u3297\u3299\u00A9\u00AE\u203C\u2049\u2122\u2139]"
+    "[\uFE0E\uFE0F\u200D\u20E3\U0001F3FB-\U0001F3FF]*[ ]?"
+    "|[\uFE0F\u20E3]"
+)
+
+
+def strip_emoji(src: str) -> tuple[str, list[str]]:
+    """Reports contain no emoji. Remove pictographs (and the space after each) and
+    return the distinct characters removed so the caller can warn."""
+    found = sorted({m.group(0).strip() for m in EMOJI_RE.finditer(src)} - {""})
+    return EMOJI_RE.sub("", src), found
+
+
 def find_chrome() -> str | None:
     for c in CHROME_CANDIDATES:
         if Path(c).exists():
@@ -198,6 +213,8 @@ def main() -> None:
     ap.add_argument("--list-themes", action="store_true", help="list available themes and exit")
     ap.add_argument("--fonts", choices=["google", "embed", "local"], default=None,
                     help="font delivery for --html (default: google). PDF always uses local fonts.")
+    ap.add_argument("--keep-emoji", action="store_true",
+                    help="do not strip emoji / pictograph characters (stripped by default)")
     ap.add_argument("--engine", choices=["weasyprint", "chrome"], default="weasyprint")
     a = ap.parse_args()
     if a.list_themes:
@@ -210,6 +227,10 @@ def main() -> None:
         ap.error("give --html and/or --pdf")
 
     src = a.input.read_text()
+    if not a.keep_emoji:
+        src, removed = strip_emoji(src)
+        if removed:
+            print(f"warning: removed emoji from output: {' '.join(removed)}  (fix the source; --keep-emoji to allow)", file=sys.stderr)
     theme_name = a.theme or meta(src, "report-theme") or DEFAULT_THEME
     cfg = load_theme(theme_name)
     if a.html:

@@ -17,6 +17,10 @@ This skill is a set of **visual themes and a builder**. It turns content into a 
 - If the user also wants the content *written* (research, drafting), that is a separate step with its own style requirements. Do that first, then apply this theme to the result.
 - Nothing in `assets/template.html` or `references/components.md` is wording to reuse; it is placeholder text showing markup only.
 
+## No emoji
+
+Reports never contain emoji or pictograph symbols (checkmarks, warning signs, stars, rockets, flags, coloured circles, keycaps), including in headings, callout labels, table cells, list bullets and diagram text. If the source has them, drop them and keep the words. Use plain text labels ("Warning", "Yes", "No") only if the user's own text already says so; do not substitute new wording. `build.py` strips emoji from the output and prints a warning (`--keep-emoji` disables this). Plain typographic characters such as arrows, middots and dashes are fine.
+
 ## Themes
 
 | Theme | Look | Best for |
@@ -55,10 +59,10 @@ Both themes use the **same HTML and class names**, so a report can be rebuilt in
    - PDF engine: `weasyprint` (default, full support) or `--engine chrome` (no running section title, no contents/cross-reference page numbers). Install with `brew install weasyprint` or `pip install weasyprint`.
    - Never overwrite the source file with built output.
 6. **Verify visually.** Render pages to PNG and look at them (`pdftoppm -r 60 -png out.pdf <dir>/p`):
-   cover fits on one page; part dividers fill their page (dark in `manual`, tinted in `minimal`); contents page numbers are filled; no SVG shapes render black; no overflow in panels; no heading stranded at the bottom of a page. For HTML, check desktop and phone width.
+   cover fits on one page; part dividers fill their page (dark in `manual`, tinted in `minimal`); contents page numbers are filled; no SVG shapes render black; no overflow in panels; no heading stranded at the bottom of a page; no emoji anywhere. For HTML, check desktop and phone width.
 7. Tell the user where the files are and which theme was used.
 
 ## Look rules
 
-- Each theme's palette and typography are fixed (see `references/components.md`); don't mix them. Don't add colour backgrounds to body text, emoji, shadows or gradients; the style is flat and hairline-ruled.
+- Each theme's palette and typography are fixed (see `references/components.md`); don't mix them. Don't add colour backgrounds to body text, shadows or gradients; the style is flat and hairline-ruled.
 - In inline SVG, set colours with the kit classes or literal hex in `style="fill:#…"`; never `var(--…)` (PDF engines ignore it). `build.py` copies the SVG kit styles into each `<svg class="diagram">`.
