@@ -159,7 +159,6 @@ a.xref::after {
   color: var(--accent);
   margin-bottom: 14px;
 }
-.sec-num::before { content: ""; width: 18px; height: 2px; border-radius: 2px; background: var(--accent); }
 .dek {
   font: 400 19px/1.55 var(--f-sans);
   letter-spacing: -0.01em;
@@ -182,25 +181,12 @@ a.xref::after {
   border-bottom: 1px solid var(--line);
 }
 .brand { white-space: nowrap; display: flex; align-items: center; gap: 12px; font: 700 18px/1 var(--f-sans); letter-spacing: -.02em; color: var(--ink); }
-.brand-mark {
-  width: 28px; height: 28px; border-radius: 8px;
-  background: var(--ink);
-  display: inline-block; flex: none; padding: 7px;
-}
-.brand-mark svg { display: block; width: 14px; height: 14px; }
 .cover-meta { text-align: right; font: 400 12.5px/1.6 var(--f-sans); color: var(--faint); }
 .cover-meta strong { color: var(--muted); font-weight: 500; }
-.plate-bar {
-  display: flex; justify-content: space-between;
-  font: 600 11px/1 var(--f-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--faint);
-  padding: 28px 0 12px;
-}
-.plate { flex: 1; min-height: 0; background: var(--surface); border-radius: 18px; padding: 24px; }
-.plate-grid { display: grid; grid-template-columns: 1fr 180px; gap: 24px; align-items: start; }
 .cover-title { margin-top: 56px; }
 .cover-title h1 { font-size: 64px; font-weight: 800; letter-spacing: -.045em; line-height: 1; }
 .cover-title .subtitle {
-  font: 400 26px/1.25 var(--f-sans); letter-spacing: -.02em; color: var(--muted); margin: 14px 0 26px;
+  font: 400 26px/1.25 var(--f-sans); letter-spacing: -.02em; color: var(--muted); margin: 24px 0 26px;
 }
 .cover-title .lede { font-size: 18px; line-height: 1.6; max-width: 36em; color: var(--text); }
 .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; font: 500 12.5px/1 var(--f-sans); color: var(--muted); }
@@ -475,10 +461,8 @@ blockquote {
   body { font-size: 16px; }
   .manual > section, .manual > nav { padding-left: 16px; padding-right: 16px; }
   .cover { padding: 32px 16px 40px !important; }
-  .cover-top, .plate-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .cover-top { flex-direction: column; align-items: flex-start; gap: 8px; }
   .cover-meta { text-align: left; }
-  .plate { padding: 16px; }
-  .plate-grid { grid-template-columns: 1fr; }
   .chapter, .toc { padding-top: 56px; }
   h1 { font-size: 30px; }
   .dek { font-size: 17px; }
@@ -519,7 +503,6 @@ blockquote {
 
   /* cover */
   .cover { page: cover; height: 9.6in; padding: 0 !important; max-width: none; break-after: page; position: relative; }
-  .plate { flex: none; }
   /* WeasyPrint ignores auto margins in flex, so pin the title block to the page bottom */
   .cover-title { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; }
   .cover-title h1 { font-size: 46pt; }
@@ -579,74 +562,11 @@ blockquote {
      keep, rewrite or add wording. Delete any component you do not need.
      ===================================================================== -->
 
-<!-- COVER: brand, meta block, optional plate (hero diagram + key), title block -->
+<!-- COVER: brand, meta block, title block -->
 <section class="cover">
   <div class="cover-top">
-    <div class="brand"><span class="brand-mark"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M3 4.5h10M3 8h10M3 11.5h6" stroke="#faf8f3" stroke-width="1.8" stroke-linecap="round"/><circle cx="12.2" cy="11.5" r="1.3" fill="#faf8f3"/></svg></span>Brand Name</div>
+    <div class="brand">Brand Name</div>
     <div class="cover-meta">Document type<br><strong>Version · Edition · Date</strong></div>
-  </div>
-  <div class="plate-bar"><span>Plate label</span><span>Right-hand note</span></div>
-
-  <div class="plate">
-    <div class="plate-grid">
-      <svg class="diagram" viewBox="0 0 560 150" role="img" aria-label="Placeholder diagram"><style>
-:root { display: block; width: 100%; height: auto; font-family: "Inter", sans-serif; }
-text { fill: #0f1419; font-size: 12px; }
-.mono { font-family: "JetBrains Mono", monospace; }
-.lbl  { font-family: "Inter", sans-serif; font-weight: 600; font-size: 10px; letter-spacing: .08em; fill: #8b919c; text-transform: uppercase; }
-.sub  { font-size: 10.5px; fill: #5d6470; }
-.it   { font-style: italic; fill: #5d6470; }
-.box  { fill: #f4f5f7; stroke: #dfe2e7; stroke-width: 1; }
-.box.white  { fill: #ffffff; stroke: #d9dde3; }
-.box.blue   { fill: #eff4ff; stroke: #c7d7fe; }
-.box.teal   { fill: #edfcf8; stroke: #b4ebe1; }
-.box.violet { fill: #f5f1ff; stroke: #d9cbfe; }
-.box.indigo { fill: #eef0ff; stroke: #c9cdfd; }
-.box.amber  { fill: #fff7eb; stroke: #fbd9a5; }
-.box.green  { fill: #effaf2; stroke: #bfe8cb; }
-.box.olive  { fill: #f6f8ec; stroke: #dbe3b8; }
-.box.rose   { fill: #fff1f3; stroke: #fecdd5; }
-.box.plum   { fill: #fcf0fe; stroke: #f1c9f7; }
-.wire  { fill: none; stroke: #9aa1ab; stroke-width: 1.2; }
-.wire.teal  { stroke: #0d9488; }
-.wire.amber { stroke: #d97706; }
-.wire.rose  { stroke: #e11d48; }
-.wire.plum  { stroke: #c026d3; }
-.dash  { stroke-dasharray: 4 3; }
-.life  { stroke: #d9dde3; stroke-width: 1; stroke-dasharray: 3 3; }
-.t-blue   { fill: #1d4ed8; }
-.t-teal   { fill: #0f766e; }
-.t-amber  { fill: #b45309; }
-.t-rose   { fill: #be123c; }
-.t-plum   { fill: #a21caf; }
-.t-muted  { fill: #5d6470; }
-
-</style>
-        <text class="lbl" x="0" y="18" style="fill:#2a5f88">SERIES A</text>
-        <line class="wire" x1="0" y1="50" x2="560" y2="50"/>
-        <rect class="box blue" x="40"  y="40" width="30" height="20" rx="2"/><text class="mono" x="55"  y="54" text-anchor="middle" font-size="10">1</text>
-        <rect class="box blue" x="120" y="40" width="30" height="20" rx="2"/><text class="mono" x="135" y="54" text-anchor="middle" font-size="10">2</text>
-        <rect class="box rose" x="300" y="40" width="30" height="20" rx="2"/><text class="mono" x="315" y="54" text-anchor="middle" font-size="10">3</text>
-        <text class="lbl" x="0" y="92" style="fill:#10707a">SERIES B</text>
-        <line class="wire" x1="0" y1="122" x2="560" y2="122"/>
-        <rect class="box teal" x="80"  y="112" width="30" height="20" rx="2"/><text class="mono" x="95"  y="126" text-anchor="middle" font-size="10">4</text>
-        <rect class="box teal" x="400" y="112" width="30" height="20" rx="2"/><text class="mono" x="415" y="126" text-anchor="middle" font-size="10">5</text>
-      </svg>
-      <div>
-        <div class="label" style="margin-bottom:8px">Key</div>
-        <ol class="key">
-          <li><span class="step">1</span><b>Item one</b><i>short description</i></li>
-          <li><span class="step">2</span><b>Item two</b><i>short description</i></li>
-          <li><span class="step">3</span><b>Item three</b><i>short description</i></li>
-        </ol>
-      </div>
-    </div>
-    <div class="mini-figs">
-      <div><div class="mini-head">Fig. 2 · Label</div><span class="chip t-blue">A</span> → <span class="chip t-amber">B</span><div class="mini-cap">Short caption.</div></div>
-      <div><div class="mini-head">Fig. 3 · Label</div><span class="chip t-gray">C</span><div class="mini-cap">Short caption.</div></div>
-      <div><div class="mini-head">Fig. 4 · Label</div><span class="chip t-rose">D</span><div class="mini-cap">Short caption.</div></div>
-      <div><div class="mini-head">Fig. 5 · Label</div><span class="chip t-indigo">E</span><div class="mini-cap">Short caption.</div></div>
-    </div>
   </div>
 
   <div class="cover-title">

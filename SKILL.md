@@ -12,7 +12,7 @@ This skill is a set of **visual themes and a builder**. It turns content into a 
 
 - **Do not change the user's words.** Keep their headings, sentences, terminology, tone, structure and order. Do not rewrite, shorten, "improve" or reformat prose into a house voice.
 - **Do not add content the user did not ask for**: no summary lines, "what this means" boxes, sources lines, citations, callouts, KPI tiles, figures, glossaries or key-takeaway sections. Use a component only when the user's content already contains that kind of thing (a table → table, a code sample → code block, a warning they wrote → callout).
-- **Do not invent diagrams or data** to fill a cover or a page. If there is nothing to draw, leave the optional cover plate out.
+- **Do not invent diagrams or data** to fill a cover or a page.
 - Titles, labels, part names and numbering come from the user's content. If something needed by the theme is missing (a title, a date), ask or leave it out; do not write one.
 - If the user also wants the content *written* (research, drafting), that is a separate step with its own style requirements. Do that first, then apply this theme to the result.
 - Nothing in `assets/template.html` or `references/components.md` is wording to reuse; it is placeholder text showing markup only.

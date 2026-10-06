@@ -25,13 +25,8 @@ Diagram tones `t-<name>` (fill / stroke): blue, teal, violet, indigo, amber, gre
 ```html
 <section class="cover">
   <div class="cover-top">
-    <div class="brand"><span class="brand-mark"><svg …/></span>Brand Name</div>
+    <div class="brand">Brand Name</div>
     <div class="cover-meta">Document type<br><strong>Version · Edition · Date</strong></div>
-  </div>
-  <div class="plate-bar"><span>Plate label</span><span>Right-hand note</span></div>
-  <div class="plate">
-    <div class="plate-grid"> <svg class="diagram">…</svg> <div><div class="label">Key</div><ol class="key">…</ol></div> </div>
-    <div class="mini-figs"> <div><div class="mini-head">Fig. 2 · Label</div>…<div class="mini-cap">Short caption.</div></div> ×4 </div>
   </div>
   <div class="cover-title">
     <h1>Report Title</h1>
