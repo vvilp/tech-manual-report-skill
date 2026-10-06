@@ -1,6 +1,6 @@
 # tech-manual-report
 
-A [Claude Code](https://claude.com/claude-code) skill that writes HTML and PDF reports in a "technical manual" style. One HTML source gives you both:
+A [Claude Code](https://claude.com/claude-code) skill that applies a "technical manual" visual theme to HTML and PDF reports. It changes how a document looks, not what it says. One HTML source gives you both:
 
 - a web page you scroll through, and
 - a US Letter PDF with running headers, page numbers, a contents page with real page numbers, and `(p. 33)` cross-references.
@@ -12,7 +12,7 @@ A [Claude Code](https://claude.com/claude-code) skill that writes HTML and PDF r
 - **Paper and ink.** Warm off-white pages with navy text, hairline rules, and no shadows or gradients.
 - **Type.** Headings in Manrope and body text in Source Sans 3. Each section opens with a short summary in Source Serif 4 italic. Labels, code and citations use JetBrains Mono, with labels in spaced-out capitals.
 - **Pages.** A cover with a diagram and a numbered key. A contents page with dotted leaders. Dark full-page part dividers with a large faded part number. Numbered sections.
-- **Parts.** `FIG. 1.2` diagram panels with captions. Warning, rule, tip and note callouts. "What this means for you" summary boxes. Code blocks, tables and KPI tiles, plus a `Sources:` line at the end of a section.
+- **Components.** `FIG. 1.2` diagram panels with captions, callouts, summary boxes, code blocks, tables and KPI tiles. These are styles only; the skill never writes their text.
 - **Diagrams.** Box diagrams are built with HTML classes. Sequence diagrams and timelines use a set of shared SVG classes.
 
 See `examples/example.pdf` and `examples/example.html` for the full sample.
@@ -27,7 +27,7 @@ git clone https://github.com/<you>/tech-manual-report ~/.claude/skills/tech-manu
 
 Or clone into one project's `.claude/skills/` folder instead.
 
-Then ask Claude Code for a report "in the technical manual style", or run `/tech-manual-report`.
+Then ask Claude Code to produce your content "in the technical manual style", or run `/tech-manual-report`. Your wording is kept as written.
 
 ### Requirements
 
@@ -58,9 +58,9 @@ Two `<meta>` tags in the source set the running header and footer:
 ```
 SKILL.md                 instructions Claude follows
 assets/theme.css         the theme (screen + print)
-assets/template.html     a sample report using every component
+assets/template.html     every component with placeholder text
 assets/fonts/            bundled TTFs + their OFL licenses
-references/components.md markup for each component, palette, diagram rules
+references/components.md markup for each component, palette, diagram classes
 scripts/build.py         HTML/PDF builder
 examples/                the template, built
 ```

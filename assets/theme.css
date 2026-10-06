@@ -120,7 +120,7 @@ cite, .cite {
   letter-spacing: .01em;
   white-space: nowrap;
 }
-/* cross-reference: <a class="xref" href="#s-2-3">when a commit fails</a> */
+/* cross-reference: <a class="xref" href="#s-2-3">link text</a> */
 a.xref {
   text-decoration: none;
   border-bottom: 1px solid #cbc8b9;
@@ -273,7 +273,7 @@ a.xref::after {
 .callout.note  { background: var(--t-amber-f); border-left-color: var(--c-amber); }
 .callout.note > .label { color: var(--c-amber); }
 
-/* "What this means for you" summary box */
+/* summary box */
 .takeaways {
   margin: 22px 0; padding: 16px 20px 12px;
   background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--c-blue);
@@ -376,7 +376,7 @@ pre.code { border: 1px solid var(--line); }
 .t-gray   { --nf: var(--t-gray-f);   --ns: var(--t-gray-s);   --nt: var(--t-gray-t); }
 .node[class*="t-"] { background: var(--nf); border-color: var(--ns); }
 .node.strong[class*="t-"] { border-width: 1.5px; }
-/* small numbered chips, e.g. commit seqs:  <span class="chip t-blue">13</span> */
+/* small chips, e.g.  <span class="chip t-blue">13</span> */
 .chip {
   display: inline-block; min-width: 24px; padding: 2px 6px; text-align: center;
   font: 500 10.5px/1.4 var(--f-mono); border: 1px solid var(--ns, var(--t-gray-s));
@@ -397,7 +397,7 @@ pre.code { border: 1px solid var(--line); }
 /* key / legend list beside a plate (cover style) */
 .key { list-style: none; margin: 0; padding: 0; font-size: 11px; }
 .key li { display: grid; grid-template-columns: 22px 1fr; column-gap: 6px; margin-bottom: 6px; }
-.key li .step { grid-row: span 2; }
+.key li .step { grid-row: span 2; align-self: start; flex: none; }
 .key li b { font: 500 10.5px/1.2 var(--f-mono); letter-spacing: .15em; text-transform: uppercase; }
 .key li i { font: italic 400 11px/1.25 var(--f-serif); color: var(--muted); }
 

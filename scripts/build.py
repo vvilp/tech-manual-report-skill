@@ -8,8 +8,8 @@ components (see assets/template.html). This script:
 
   1. injects the theme stylesheet and fonts into <head>;
   2. fills the running header / footer strings from two <meta> tags:
-       <meta name="doc-short"  content="Pi Durable">                  (top-right of every page)
-       <meta name="doc-footer" content="Pi Durable / Technical Manual"> (bottom-left of every page)
+       <meta name="doc-short"  content="Short title">                  (top-right of every page)
+       <meta name="doc-footer" content="Short title / Document type">  (bottom-left of every page)
   3. writes a standalone HTML file and/or renders a PDF.
 
 Fonts:  --fonts google  link Google Fonts (small file, needs internet to view)
