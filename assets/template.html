@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledger Service Technical Manual</title>
+<!-- running header (top-right) and footer (bottom-left) strings for the PDF -->
+<meta name="doc-short" content="Ledger Service">
+<meta name="doc-footer" content="Ledger Service / Technical Manual">
+<!-- for a quick browser preview without building, uncomment: -->
+<!-- <link rel="stylesheet" href="theme.css"> -->
+<!-- THEME -->
+</head>
+<body class="manual">
+
+<!-- =====================================================================
+     COVER  — brand, meta block, a "plate" (hero diagram + key), title block
+     ===================================================================== -->
+<section class="cover">
+  <div class="cover-top">
+    <div class="brand"><span class="brand-mark"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M3 4.5h10M3 8h10M3 11.5h6" stroke="#faf8f3" stroke-width="1.8" stroke-linecap="round"/><circle cx="12.2" cy="11.5" r="1.3" fill="#faf8f3"/></svg></span>Ledger Service</div>
+    <div class="cover-meta">Technical Manual<br><strong>ledger-svc 2.4.0 · Engineering Edition · 2026.10</strong></div>
+  </div>
+  <div class="plate-bar"><span>Plate I · A write, and what survives it</span><span>Two replicas · one log</span></div>
+
+  <div class="plate">
+    <div class="plate-grid">
+      <svg class="diagram" viewBox="0 0 560 230" role="img" aria-label="Timeline of two replicas writing to one log">
+        <text class="lbl" x="0" y="18" style="fill:#2a5f88">REPLICA A</text>
+        <line class="wire" x1="0" y1="50" x2="560" y2="50"/>
+        <rect class="box blue" x="40"  y="40" width="30" height="20" rx="2"/><text class="mono" x="55"  y="54" text-anchor="middle" font-size="10">12</text>
+        <rect class="box blue" x="90"  y="40" width="30" height="20" rx="2"/><text class="mono" x="105" y="54" text-anchor="middle" font-size="10">13</text>
+        <rect class="box blue" x="140" y="40" width="30" height="20" rx="2"/><text class="mono" x="155" y="54" text-anchor="middle" font-size="10">14</text>
+        <rect class="box rose" x="310" y="40" width="30" height="20" rx="2"/><text class="mono t-rose" x="325" y="54" text-anchor="middle" font-size="10">15</text>
+        <text class="it" x="300" y="34" font-size="11">replayed</text>
+        <rect x="40" y="72" width="230" height="10" fill="#9a6a2c"/>
+        <rect x="120" y="72" width="150" height="10" fill="url(#hatch)" stroke="#9a6a2c"/>
+        <text class="mono t-amber" x="0" y="81" font-size="9.5">apply</text>
+
+        <text class="lbl" x="0" y="122" style="fill:#10707a">REPLICA B</text>
+        <line class="wire" x1="0" y1="152" x2="560" y2="152"/>
+        <rect class="box teal" x="60"  y="142" width="30" height="20" rx="2"/><text class="mono" x="75"  y="156" text-anchor="middle" font-size="10">16</text>
+        <rect class="box teal" x="380" y="142" width="30" height="20" rx="2"/><text class="mono" x="395" y="156" text-anchor="middle" font-size="10">17</text>
+        <rect class="box teal" x="460" y="142" width="30" height="20" rx="2"/><text class="mono" x="475" y="156" text-anchor="middle" font-size="10">18</text>
+
+        <path d="M285 10 l8 12 l-8 12 l8 12 l-8 12 l8 12 l-8 12 l8 12 l-8 12 l8 12 l-8 12 l8 12 l-8 12 l8 12 l-8 12 l8 12" class="wire rose" fill="none"/>
+        <rect class="box rose" x="262" y="0" width="56" height="16" rx="1"/><text class="mono t-rose" x="290" y="12" text-anchor="middle" font-size="9.5">CRASH</text>
+
+        <rect class="box teal" x="0" y="196" width="560" height="22" rx="2"/>
+        <text class="mono" x="14" y="211" font-size="10" style="fill:#10707a">ledger.log   accounts · entries · holds · snapshots</text>
+        <defs><pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#f4efe6"/><line x1="0" y1="0" x2="0" y2="5" stroke="#c9b48f" stroke-width="1.5"/></pattern></defs>
+      </svg>
+      <div>
+        <div class="label" style="margin-bottom:8px">Key</div>
+        <ol class="key">
+          <li><span class="step">1</span><b>Log seq</b><i>one atomic append per write</i></li>
+          <li><span class="step">2</span><b>Apply</b><i>white pending, solid running</i></li>
+          <li><span class="step">3</span><b>Crash</b><i>replica A dies mid-apply</i></li>
+          <li><span class="step">4</span><b>Replay</b><i>the open write is re-run once</i></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="mini-figs">
+      <div><div class="mini-head">Fig. 2 · Holds</div><span class="chip t-blue">7</span> → <span class="chip t-amber">8</span><div class="mini-cap">A hold reserves funds until it settles.</div></div>
+      <div><div class="mini-head">Fig. 3 · Snapshots</div><span class="chip t-gray">older</span> <span class="chip t-teal">18</span><div class="mini-cap">Readers start from the newest snapshot.</div></div>
+      <div><div class="mini-head">Fig. 4 · Replay</div><span class="chip t-rose">15</span><div class="mini-cap">Unsafe writes are not re-run.</div></div>
+      <div><div class="mini-head">Fig. 5 · Watchers</div><span class="chip t-indigo">commit</span><div class="mini-cap">Every client sees the same ops.</div></div>
+    </div>
+  </div>
+
+  <div class="cover-title">
+    <h1>Ledger Service</h1>
+    <div class="subtitle">Technical Manual</div>
+    <p class="lede">The double-entry ledger from the first write down to the stored rows: atomic appends, holds that settle exactly once, replay after a crash, snapshots, and the storage underneath.</p>
+    <div class="legend">
+      <span style="--dot:var(--c-blue)">Model</span>
+      <span style="--dot:var(--c-teal)">Writes</span>
+      <span style="--dot:var(--c-violet)">Accounts</span>
+      <span style="--dot:var(--c-green)">Holds</span>
+      <span style="--dot:var(--c-amber)">Replay</span>
+      <span style="--dot:var(--c-rose)">Failures</span>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     CONTENTS — one .toc-part per part; links must point at section ids
+     ===================================================================== -->
+<nav class="toc">
+  <h1>Contents</h1>
+  <div class="toc-part c-blue">
+    <div class="toc-part-title"><span class="num">1</span>The Model</div>
+    <ol>
+      <li><a href="#s-1-1"><span class="n">1.1</span><span class="t">What the ledger is for</span><span class="dots"></span></a></li>
+      <li><a href="#s-1-2"><span class="n">1.2</span><span class="t">The life of one write</span><span class="dots"></span></a></li>
+    </ol>
+  </div>
+  <div class="toc-part c-teal">
+    <div class="toc-part-title"><span class="num">2</span>Operations</div>
+    <ol>
+      <li><a href="#s-2-1"><span class="n">2.1</span><span class="t">Running it in production</span><span class="dots"></span></a></li>
+    </ol>
+  </div>
+</nav>
+
+<!-- =====================================================================
+     PART DIVIDER — dark full page. Accent comes from the c-* class.
+     ===================================================================== -->
+<section class="part c-blue" id="part-1">
+  <div class="part-inner">
+    <div class="part-label">Part 1</div>
+    <h1>The Model</h1>
+    <p class="dek">A ledger whose every visible balance is a stored append, so a process that dies mid-write is just a pause.</p>
+    <div class="part-rule"></div>
+    <ol>
+      <li><a href="#s-1-1"><span class="n">1.1</span><span class="t">What the ledger is for</span></a></li>
+      <li><a href="#s-1-2"><span class="n">1.2</span><span class="t">The life of one write</span></a></li>
+    </ol>
+  </div>
+  <div class="part-numeral">01</div>
+  <div class="part-foot"><span class="doc"></span><span>Part 1</span></div>
+</section>
+
+<!-- =====================================================================
+     SECTION — sec-num, h1, italic dek, then body
+     ===================================================================== -->
+<section class="chapter c-blue" id="s-1-1">
+  <header class="sec-head">
+    <div class="sec-num">1.1</div>
+    <h1>What the ledger is for</h1>
+    <p class="dek">Money moves in pairs. The ledger stores both halves in one append, and nothing is shown that was not appended.</p>
+  </header>
+
+  <p>This manual documents <code>ledger-svc</code> at version 2.4.0, from repository <code>acme/ledger</code> at commit <code>5b6c792</code>. It follows the service from its one rule down to the rows on disk, and every record shown was captured from a real run <cite>NOTES.md §2</cite>.</p>
+
+  <h2>The problem: four kinds of state</h2>
+  <p>A payment touches more than a balance. Before the ledger, each of these lived somewhere different:</p>
+  <div class="defs">
+    <p><b>Entries</b> — the debit and credit lines, appended in pairs <cite>spec §3</cite>.</p>
+    <p><b>Holds</b> — reserved funds that settle or release exactly once. See <a class="xref" href="#s-1-2">the life of one write</a>.</p>
+    <p><b>Snapshots</b> — periodic balances so readers never scan the whole log.</p>
+  </div>
+
+  <div class="callout warn">
+    <span class="label">Experimental</span>
+    <p>The README opens with one line of status: “The API changes without notice between releases.” Everything here is true of 2.4.0.</p>
+  </div>
+
+  <div class="callout rule">
+    <span class="label">Core rule</span>
+    <p>“A write atomically appends both entries and any hold change. Only appended state is observable.”</p>
+  </div>
+
+  <figure class="fig">
+    <figcaption class="fig-head"><span class="no">Fig. 1.1</span><span class="title">The layers of the service</span><span class="kind">Layers</span></figcaption>
+    <div class="lane">Your process</div>
+    <div class="node"><b>Host application</b><small>Ledger.open(store) · post() · hold() · watch()</small></div>
+    <div class="lane">Ledger · src/ledger</div>
+    <div class="group">
+      <div class="row">
+        <div class="node t-blue"><b>Accounts</b><small>open, close, limits</small></div>
+        <div class="node t-violet"><b>Postings</b><small>pairs, validation</small></div>
+        <div class="node t-amber"><b>Holds</b><small>reserve, settle</small></div>
+        <div class="node t-indigo"><b>Views</b><small>balances, watch</small></div>
+      </div>
+      <div class="node t-amber mono" style="margin-top:8px"><b>built-in jobs: snapshot · compact · reconcile</b></div>
+    </div>
+    <div class="lane">Storage · one backend per ledger</div>
+    <div class="row">
+      <div class="node t-teal"><b>MemoryStore</b><small>nothing persisted</small></div>
+      <div class="node t-teal"><b>SqliteStore</b><small>one database file</small></div>
+      <div class="node t-teal"><b>LogStore</b><small>append-only files</small></div>
+    </div>
+  </figure>
+  <p class="caption"><b>The host drives the ledger, and the ledger appends through one store.</b> The right column of options is omitted. After src/ledger/index.ts.</p>
+
+  <h2>How the sources rank</h2>
+  <table>
+    <thead><tr><th>Source</th><th>Path</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td>Source code</td><td><code>src/**</code></td><td>every type, default and field name</td></tr>
+      <tr><td>Spec</td><td><code>docs/spec.md</code></td><td>every rule, quoted exactly; cited as <cite>spec §5.2</cite></td></tr>
+      <tr><td>Tests</td><td><code>test/*.test.ts</code></td><td>exact behaviour at the edges</td></tr>
+    </tbody>
+  </table>
+
+  <div class="takeaways">
+    <span class="label">What this means for you</span>
+    <ul>
+      <li>Ask one question of any design: is the balance you show appended? If not, it does not exist yet.</li>
+      <li>Change related things in one write, so a crash can never split them.</li>
+      <li>Never call the network inside a write callback.</li>
+    </ul>
+  </div>
+
+  <div class="sources"><b>Sources:</b> docs/spec.md (§1, §3); src/ledger/index.ts; test/holds.test.ts (“settles once”); NOTES.md §2</div>
+</section>
+
+<section class="chapter c-blue" id="s-1-2">
+  <header class="sec-head">
+    <div class="sec-num">1.2</div>
+    <h1>The life of one write</h1>
+    <p class="dek">One payment, eight appends, and the order in which a reader can see them.</p>
+  </header>
+
+  <p>A <span class="term">write</span> is an atomic append: everything in it is stored together, or nothing is. Here is the smallest program that posts one payment:</p>
+
+  <div class="code">
+    <div class="code-head">Quick start, minimal<span class="path">examples/00-post.ts</span><span class="lang">TS</span></div>
+<pre><span class="tk-k">const</span> ledger = <span class="tk-k">await</span> Ledger.<span class="tk-f">open</span>(<span class="tk-k">new</span> SqliteStore(<span class="tk-s">"ledger.db"</span>));
+<span class="tk-k">await</span> ledger.<span class="tk-f">post</span>({
+  debit:  <span class="tk-s">"cash"</span>,
+  credit: <span class="tk-s">"revenue"</span>,
+  amount: <span class="tk-n">4200</span>,   <span class="tk-c">// cents</span>
+});</pre>
+  </div>
+  <p class="code-note">Run with <code>npx tsx examples/00-post.ts</code>; the database is created on first open.</p>
+
+  <figure class="fig">
+    <figcaption class="fig-head"><span class="no">Fig. 1.2</span><span class="title">One payment, appends 1–4</span><span class="kind">Sequence</span></figcaption>
+    <svg class="diagram" viewBox="0 0 640 300" role="img" aria-label="Sequence diagram of one payment">
+      <defs><marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3f4651"/></marker>
+            <marker id="arr-t" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#10707a"/></marker></defs>
+      <!-- actors -->
+      <rect class="box white" x="40"  y="6" width="100" height="32" rx="2"/><text class="lbl" x="90"  y="26" text-anchor="middle" style="fill:#161d27">HOST</text>
+      <rect class="box green" x="190" y="6" width="100" height="32" rx="2"/><text class="lbl" x="240" y="26" text-anchor="middle" style="fill:#161d27">BANK API</text>
+      <rect class="box blue"  x="340" y="6" width="100" height="32" rx="2"/><text class="lbl" x="390" y="26" text-anchor="middle" style="fill:#161d27">LEDGER</text>
+      <rect class="box teal"  x="500" y="6" width="100" height="32" rx="2"/><text class="lbl" x="550" y="26" text-anchor="middle" style="fill:#161d27">STORE</text>
+      <line class="life" x1="90"  y1="38" x2="90"  y2="292"/>
+      <line class="life" x1="240" y1="38" x2="240" y2="292"/>
+      <line class="life" x1="390" y1="38" x2="390" y2="292"/>
+      <line class="life" x1="550" y1="38" x2="550" y2="292"/>
+      <!-- messages -->
+      <line class="wire" x1="90" y1="70" x2="388" y2="70" marker-end="url(#arr)"/>
+      <text class="mono" x="240" y="64" text-anchor="middle">post()</text>
+      <text class="sub" x="240" y="84" text-anchor="middle">cash → revenue · 4200</text>
+
+      <circle cx="20" cy="118" r="8" fill="none" stroke="#161d27"/><text class="mono" x="20" y="121.5" text-anchor="middle" font-size="9">1</text>
+      <line class="wire teal" x1="390" y1="118" x2="548" y2="118" marker-end="url(#arr-t)"/>
+      <text class="mono t-teal" x="470" y="112" text-anchor="middle">entry 7 · entry 8</text>
+      <text class="sub" x="470" y="132" text-anchor="middle">hold 9 pending</text>
+
+      <circle cx="20" cy="170" r="8" fill="none" stroke="#161d27"/><text class="mono" x="20" y="173.5" text-anchor="middle" font-size="9">2</text>
+      <line class="wire amber dash" x1="390" y1="170" x2="548" y2="170"/>
+      <text class="mono t-amber" x="470" y="164" text-anchor="middle">hold 9 running</text>
+
+      <line class="wire plum" x1="390" y1="210" x2="242" y2="210" marker-end="url(#arr)"/>
+      <text class="mono t-plum" x="316" y="204" text-anchor="middle">capture</text>
+
+      <circle cx="20" cy="258" r="8" fill="none" stroke="#161d27"/><text class="mono" x="20" y="261.5" text-anchor="middle" font-size="9">3</text>
+      <line class="wire teal" x1="390" y1="258" x2="548" y2="258" marker-end="url(#arr-t)" stroke-width="1.5"/>
+      <text class="mono t-teal" x="470" y="252" text-anchor="middle" font-weight="700">hold 9 → settled</text>
+      <text class="sub" x="470" y="274" text-anchor="middle">balance visible</text>
+    </svg>
+  </figure>
+  <p class="caption"><b>Appends 1–3 take the payment from post() to a settled hold.</b> From research/capture/sqlite-commits.txt.</p>
+
+  <h3>Appends 2–3: settling the hold</h3>
+  <p>The scheduler reserves hold 9 by rewriting it from <code>pending</code> to <code>running</code>, then calls the bank off the line. A crash between the two leaves an open hold that is replayed once on restart <a class="xref" href="#s-2-1">running it in production</a>.</p>
+
+  <div class="callout warn">
+    <span class="label">Fire and forget</span>
+    <p>Work started inside the callback and left running can still change the open write, and then fails once it settles. Await every call.</p>
+  </div>
+
+  <div class="sources"><b>Sources:</b> src/ledger/post.ts; src/holds/scheduler.ts; research/capture/sqlite-commits.txt</div>
+</section>
+
+<section class="part c-teal" id="part-2">
+  <div class="part-inner">
+    <div class="part-label">Part 2</div>
+    <h1>Operations</h1>
+    <p class="dek">What to watch, what to page on, and what the numbers looked like last quarter.</p>
+    <div class="part-rule"></div>
+    <ol>
+      <li><a href="#s-2-1"><span class="n">2.1</span><span class="t">Running it in production</span></a></li>
+    </ol>
+  </div>
+  <div class="part-numeral">02</div>
+  <div class="part-foot"><span class="doc"></span><span>Part 2</span></div>
+</section>
+
+<section class="chapter c-teal" id="s-2-1">
+  <header class="sec-head">
+    <div class="sec-num">2.1</div>
+    <h1>Running it in production</h1>
+    <p class="dek">Four numbers tell you whether the ledger is healthy; one tells you it is not.</p>
+  </header>
+
+  <div class="kpis">
+    <div class="kpi"><div class="v">99.98%</div><div class="k">Write success</div></div>
+    <div class="kpi"><div class="v">4.1 ms</div><div class="k">p50 append</div></div>
+    <div class="kpi"><div class="v">38 ms</div><div class="k">p99 append</div></div>
+    <div class="kpi"><div class="v">0</div><div class="k">Unsettled holds</div></div>
+  </div>
+
+  <h2>Settings and defaults</h2>
+  <table class="compact">
+    <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>See</th></tr></thead>
+    <tbody>
+      <tr><td><code>store</code></td><td><code>Store</code></td><td>required</td><td><a class="xref" href="#s-1-1">1.1</a></td></tr>
+      <tr><td><code>snapshotEvery</code></td><td><code>number</code></td><td><code>1000</code></td><td><a class="xref" href="#s-1-2">1.2</a></td></tr>
+      <tr><td><code>now</code></td><td><code>() =&gt; number</code></td><td><code>Date.now</code></td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <span class="label">Tip</span>
+    <p>Alert on unsettled holds older than five minutes, not on error rate: a stuck hold is the first sign of a poisoned store.</p>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">What this means for you</span>
+    <ul>
+      <li>Page on stuck holds; dashboard everything else.</li>
+      <li>If storage fails in a way that may have written, close and reopen; do not retry.</li>
+    </ul>
+  </div>
+  <div class="sources"><b>Sources:</b> ops/runbook.md; dashboards/ledger.json (Q3 2026)</div>
+</section>
+
+</body>
+</html>

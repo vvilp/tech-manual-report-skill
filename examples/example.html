@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledger Service Technical Manual</title>
+<!-- running header (top-right) and footer (bottom-left) strings for the PDF -->
+<meta name="doc-short" content="Ledger Service">
+<meta name="doc-footer" content="Ledger Service / Technical Manual">
+<!-- for a quick browser preview without building, uncomment: -->
+<!-- -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@1,8..60,400;1,8..60,500&family=JetBrains+Mono:wght@400;500;700&display=swap"><style>
+
+/* ==========================================================================
+   Technical Manual theme
+   Warm paper, navy ink, Manrope headings, Source Sans 3 body,
+   Source Serif 4 italic deks, JetBrains Mono labels and code.
+   Works on screen (single scrolling column) and in print (@page, US Letter).
+   Fonts are injected by scripts/build.py (local TTFs or Google Fonts).
+   ========================================================================== */
+
+:root {
+  /* paper + ink */
+  --paper:      #faf8f3;
+  --panel:      #f4f2ea;   /* figures, code, "means for you" boxes */
+  --panel-2:    #eeece2;   /* neutral nodes */
+  --line:       #e0ddd0;   /* hairlines, panel borders */
+  --rule:       #b9b6a6;   /* heavier rules under headers */
+  --ink:        #161d27;
+  --muted:      #5f6772;
+  --faint:      #878e97;
+  --code-ink:   #24405e;
+  --night:      #0e1826;   /* part dividers */
+  --night-2:    #1b2a3d;   /* giant part numeral */
+  --night-line: #39414d;
+  --night-ink:  #e9edf2;
+  --night-mute: #b3bfd0;
+
+  /* part / chapter palette (in order) */
+  --c-blue:   #2a5f88;
+  --c-teal:   #10707a;
+  --c-violet: #5c4a8c;
+  --c-green:  #0d6b4f;
+  --c-amber:  #8a5a18;
+  --c-rose:   #97405a;
+  --c-indigo: #3d4f96;
+  --c-plum:   #7a3f78;
+  --c-forest: #2f5d46;
+  --c-slate:  #4a525c;
+
+  /* node tones: fill / stroke / text */
+  --t-blue-f:   #eaf0f5; --t-blue-s:   #7194b0; --t-blue-t:   #2a5f88;
+  --t-teal-f:   #e8f1f2; --t-teal-s:   #6aa7ad; --t-teal-t:   #10707a;
+  --t-violet-f: #efecf5; --t-violet-s: #a99dc6; --t-violet-t: #5c4a8c;
+  --t-indigo-f: #eceef7; --t-indigo-s: #7c87b3; --t-indigo-t: #3d4f96;
+  --t-amber-f:  #f6efe3; --t-amber-s:  #b08f61; --t-amber-t:  #8a5a18;
+  --t-green-f:  #eaf2ee; --t-green-s:  #9cc2b5; --t-green-t:  #0d6b4f;
+  --t-olive-f:  #e8ecda; --t-olive-s:  #b9c6a8; --t-olive-t:  #4d5f2c;
+  --t-rose-f:   #f7ecef; --t-rose-s:   #c98d9f; --t-rose-t:   #97405a;
+  --t-plum-f:   #f4ecf2; --t-plum-s:   #c8b1c5; --t-plum-t:   #7a3f78;
+  --t-gray-f:   #eeece2; --t-gray-s:   #cfcabd; --t-gray-t:   #5f6772;
+
+  --accent: var(--c-blue);
+  --accent-light: #6f9fd8;
+
+  --f-head: "Manrope", "Inter", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  --f-serif: "Source Serif 4", "Source Serif Pro", Georgia, serif;
+  --f-mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --measure: 760px;
+}
+
+/* accent per part: put the class on a .part and the .chapter sections after it */
+.c-blue   { --accent: var(--c-blue);   --accent-light: #6f9fd8; }
+.c-teal   { --accent: var(--c-teal);   --accent-light: #5fbcc4; }
+.c-violet { --accent: var(--c-violet); --accent-light: #a493dc; }
+.c-green  { --accent: var(--c-green);  --accent-light: #5fbf9a; }
+.c-amber  { --accent: var(--c-amber);  --accent-light: #d9a55a; }
+.c-rose   { --accent: var(--c-rose);   --accent-light: #df8aa3; }
+.c-indigo { --accent: var(--c-indigo); --accent-light: #8d9de6; }
+.c-plum   { --accent: var(--c-plum);   --accent-light: #cf8fcb; }
+.c-forest { --accent: var(--c-forest); --accent-light: #7fbf9c; }
+.c-slate  { --accent: var(--c-slate);  --accent-light: #a7b0bb; }
+
+/* ---------- base ---------- */
+* { box-sizing: border-box; }
+html { background: var(--paper); }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 15px/1.62 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+  font-kerning: normal;
+}
+p { margin: 0 0 .85em; }
+b, strong { font-weight: 700; }
+a { color: inherit; }
+img, svg { max-width: 100%; }
+
+h1, h2, h3, h4 {
+  font-family: var(--f-head);
+  color: var(--ink);
+  letter-spacing: -0.015em;
+  margin: 0;
+  break-after: avoid;
+}
+h1 { font-weight: 600; font-size: 31px; line-height: 1.15; letter-spacing: -0.025em; }
+h2 { font-weight: 600; font-size: 20px; line-height: 1.25; margin: 1.5em 0 .55em; }
+h3 { font-weight: 600; font-size: 16px; line-height: 1.3;  margin: 1.3em 0 .45em; }
+h4 { font-weight: 700; font-size: 13px; margin: 1.1em 0 .35em; }
+
+/* mono label: letterspaced uppercase used everywhere */
+.label, .eyebrow {
+  font: 500 10.5px/1.3 var(--f-mono);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- inline elements ---------- */
+code, kbd, samp, .mono {
+  font-family: var(--f-mono);
+  font-size: .9em;
+  color: var(--code-ink);
+}
+/* source citation after a claim:  <cite>spec §4</cite> */
+cite, .cite {
+  font: 400 .72em/1 var(--f-mono);
+  font-style: normal;
+  color: var(--faint);
+  letter-spacing: .01em;
+  white-space: nowrap;
+}
+/* cross-reference: <a class="xref" href="#s-2-3">when a commit fails</a> */
+a.xref {
+  text-decoration: none;
+  border-bottom: 1px solid #cbc8b9;
+}
+a.xref::after {
+  font: 400 .72em var(--f-mono);
+  color: var(--faint);
+  margin-left: .25em;
+}
+.term { font-weight: 700; }
+
+/* ---------- document layout (screen) ---------- */
+.manual > section,
+.manual > nav { padding-left: 24px; padding-right: 24px; }
+.page-col { max-width: var(--measure); margin: 0 auto; }
+
+.chapter { max-width: calc(var(--measure) + 48px); margin: 0 auto; padding-top: 80px; padding-bottom: 24px; }
+.manual { overflow-wrap: break-word; }
+
+/* section opener */
+.sec-head { border-bottom: 1px solid var(--rule); padding-bottom: 20px; margin-bottom: 26px; }
+.sec-num {
+  font: 500 12px/1 var(--f-mono);
+  letter-spacing: .25em;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.dek {
+  font: italic 400 17px/1.45 var(--f-serif);
+  color: var(--muted);
+  max-width: 34em;
+  margin: 10px 0 0;
+}
+
+/* ---------- cover ---------- */
+.cover {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 56px 24px 48px !important;
+  display: flex;
+  flex-direction: column;
+}
+.cover-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding-bottom: 18px;
+  border-bottom: 2px solid var(--rule);
+}
+.brand { white-space: nowrap; display: flex; align-items: center; gap: 12px; font: 700 21px/1 var(--f-head); letter-spacing: -.02em; }
+.brand-mark {
+  width: 26px; height: 26px; border-radius: 5px;
+  background: var(--c-amber);
+  display: inline-block; flex: none; padding: 6px;
+}
+.brand-mark svg { display: block; width: 14px; height: 14px; }
+.cover-meta { text-align: right; font: 400 10.5px/1.75 var(--f-mono); letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+.cover-meta strong { color: var(--ink); font-weight: 500; }
+.plate-bar {
+  display: flex; justify-content: space-between;
+  font: 400 10px/1 var(--f-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--muted);
+  padding: 10px 0; border-bottom: 1px solid var(--line); margin-bottom: 16px;
+}
+.plate { flex: 1; min-height: 0; }
+.plate-grid { display: grid; grid-template-columns: 1fr 170px; gap: 18px; align-items: start; }
+.cover-title {
+  margin-top: 40px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.cover-title h1 { font-size: 60px; font-weight: 700; letter-spacing: -.035em; line-height: 1; }
+.cover-title .subtitle {
+  font: italic 400 30px/1.2 var(--f-serif); color: var(--c-amber); margin: 6px 0 22px;
+}
+.cover-title .lede { font-size: 15.5px; max-width: 40em; color: #2b333e; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 22px;
+  font: 400 10px/1 var(--f-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.legend span::before {
+  content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--dot, var(--muted)); margin-right: 7px; vertical-align: 1px;
+}
+
+/* ---------- table of contents ---------- */
+.toc { max-width: calc(var(--measure) + 48px); margin: 0 auto; padding-top: 72px; padding-bottom: 24px; }
+.toc h1 { font-size: 30px; margin-bottom: 26px; }
+.toc-part { margin: 0 0 22px; break-inside: avoid; }
+.toc-part > .toc-part-title {
+  display: flex; align-items: center; gap: 9px;
+  font: 600 16px/1.2 var(--f-head); margin-bottom: 8px; letter-spacing: -.01em; white-space: nowrap;
+}
+.toc-part > .toc-part-title .num {
+  width: 19px; height: 19px; border-radius: 2px; background: var(--accent);
+  color: #fff; font: 500 10px/19px var(--f-mono); text-align: center; letter-spacing: 0;
+}
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc li a {
+  display: flex; align-items: baseline; gap: 10px;
+  text-decoration: none; padding: 4px 0; font-size: 13px;
+}
+.toc li .n { width: 26px; flex: none; font: 400 11px var(--f-mono); color: var(--faint); letter-spacing: .05em; }
+.toc li .t { flex: none; }
+.toc li .dots { flex: 1; border-bottom: 1px dotted #c4c1b3; transform: translateY(-4px); min-width: 20px; }
+.toc li a::after { content: ""; font: 400 11px var(--f-mono); color: var(--muted); }
+
+/* ---------- part divider ---------- */
+.part {
+  background: var(--night);
+  color: var(--night-ink);
+  padding: 96px 24px 80px !important;
+  position: relative;
+  overflow: hidden;
+  margin: 48px 0 0;
+}
+.part-inner { max-width: var(--measure); margin: 0 auto; position: relative; z-index: 1; }
+.part .part-label { font: 500 11px/1 var(--f-mono); letter-spacing: .3em; text-transform: uppercase; color: var(--accent-light); }
+.part h1 { color: #f2f4f7; font-size: 44px; font-weight: 600; letter-spacing: -.03em; margin: 16px 0 14px; }
+.part .dek { color: var(--night-mute); font-size: 18px; max-width: 26em; }
+.part-rule { height: 1px; background: var(--night-line); margin: 34px 0 18px; position: relative; }
+.part-rule::before { content: ""; position: absolute; left: 0; top: -0.5px; width: 100px; height: 2px; background: var(--accent-light); }
+.part ol { list-style: none; margin: 0; padding: 0; }
+.part li { padding: 0; border-bottom: 1px solid #222d3b; }
+.part li a { display: flex; gap: 22px; padding: 8px 0; font-size: 13px; color: #e4e8ee; text-decoration: none; }
+.part li .n { font: 400 11px var(--f-mono); color: var(--accent-light); width: 24px; }
+.part li .t { flex: 1; }
+.part li a::after { content: ""; font: 400 11px var(--f-mono); color: var(--night-mute); }
+.part-numeral {
+  position: absolute; right: 24px; bottom: -40px;
+  font: 700 260px/1 var(--f-head); letter-spacing: -.06em;
+  color: var(--night-2); z-index: 0; user-select: none;
+}
+.part-foot { display: none; }
+
+/* ---------- definition rows: "Term — explanation" with hairlines ---------- */
+.defs { margin: 14px 0 18px; border-top: 1px solid var(--line); }
+.defs > p, .defs > div { margin: 0; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.defs b:first-child, .defs .term:first-child { font-weight: 700; }
+
+/* ---------- callouts ---------- */
+.callout {
+  margin: 18px 0 20px; padding: 14px 18px 12px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  font-size: 14px; break-inside: avoid;
+}
+.callout > .label { display: block; color: var(--accent); margin-bottom: 6px; font-size: 10px; }
+.callout p:last-child { margin-bottom: 0; }
+.callout.warn  { background: var(--t-rose-f); border-left-color: var(--c-rose); }
+.callout.warn > .label { color: var(--c-rose); }
+.callout.rule  { border-left-color: var(--c-blue); }
+.callout.rule > .label { color: var(--c-blue); }
+.callout.tip   { background: var(--t-green-f); border-left-color: var(--c-green); }
+.callout.tip > .label { color: var(--c-green); }
+.callout.note  { background: var(--t-amber-f); border-left-color: var(--c-amber); }
+.callout.note > .label { color: var(--c-amber); }
+
+/* "What this means for you" summary box */
+.takeaways {
+  margin: 22px 0; padding: 16px 20px 12px;
+  background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--c-blue);
+  break-inside: avoid; font-size: 14px;
+}
+.takeaways > .label { display: block; color: var(--c-blue); margin-bottom: 8px; font-size: 10px; }
+.takeaways ul { margin: 0; padding-left: 18px; }
+.takeaways li { margin: 0 0 5px; }
+.takeaways li::marker { color: var(--faint); }
+
+/* sources line at the end of a section */
+.sources {
+  border-top: 1px solid var(--line); margin-top: 22px; padding-top: 10px;
+  font: 400 10px/1.65 var(--f-mono); color: var(--faint);
+}
+.sources b { color: var(--muted); font-weight: 500; }
+
+/* ---------- tables ---------- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; font-size: 13px; }
+thead th {
+  text-align: left; font: 400 10px/1.3 var(--f-mono); letter-spacing: .2em; text-transform: uppercase;
+  color: var(--muted); padding: 6px 12px 8px 0; border-bottom: 1.5px solid var(--rule);
+}
+tbody td { padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.45; }
+tbody td code { font-size: .92em; }
+table.compact { font-size: 12px; }
+table.compact tbody td { padding: 5px 12px 5px 0; }
+.table-caption { font-size: 12px; color: var(--muted); margin: -10px 0 18px; }
+
+/* ---------- code blocks ---------- */
+.code {
+  margin: 16px 0 6px; background: var(--panel); border: 1px solid var(--line);
+  break-inside: avoid;
+}
+.code-head {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 9px 14px; border-bottom: 1px solid var(--line);
+  font: 700 12px/1.3 var(--f-mono); color: var(--ink);
+}
+.code-head .path { font-weight: 400; font-size: 11px; color: var(--faint); }
+.code-head .lang { margin-left: auto; font-weight: 400; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); }
+.code pre, pre.code {
+  margin: 0; padding: 12px 14px; overflow-x: auto;
+  font: 400 11.5px/1.6 var(--f-mono); color: var(--code-ink); white-space: pre;
+}
+pre.code { border: 1px solid var(--line); }
+.code-note { font-size: 12px; color: var(--muted); margin: 6px 0 18px; }
+/* light token colours (optional, hand-applied spans) */
+.tk-k { color: var(--c-violet); }   /* keyword */
+.tk-s { color: var(--c-rose); }     /* string */
+.tk-n { color: var(--c-amber); }    /* number / literal */
+.tk-c { color: var(--faint); font-style: italic; } /* comment */
+.tk-f { color: var(--c-teal); }     /* function */
+
+/* ---------- figures ---------- */
+.fig {
+  margin: 20px 0 8px; padding: 12px 14px 16px;
+  background: var(--panel); border: 1px solid var(--line); border-left: 3px solid #7092aa;
+  break-inside: avoid; font-size: 12px;
+}
+.fig-head {
+  display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px;
+  font: 400 10.5px/1.3 var(--f-mono); letter-spacing: .2em; text-transform: uppercase;
+}
+.fig-head .no { font-weight: 700; color: var(--ink); }
+.fig-head .title { color: var(--c-blue); }
+.fig-head .kind { margin-left: auto; color: var(--faint); font-size: 9.5px; }
+.caption { font-size: 12px; line-height: 1.5; color: var(--muted); margin: 6px 0 22px; }
+.caption b:first-child { color: var(--ink); }
+
+/* figure building blocks (HTML diagrams) */
+.lane { font: 400 10px/1.3 var(--f-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 10px 0 6px; }
+.lane:first-child { margin-top: 0; }
+.row { display: flex; gap: 8px; align-items: stretch; flex-wrap: wrap; }
+.row > * { flex: 1 1 0; }
+.stack { display: flex; flex-direction: column; gap: 8px; }
+.group { background: #fff; border: 1px solid #3f4651; border-radius: 3px; padding: 10px; }
+.group.soft { background: transparent; border-color: var(--line); }
+.node {
+  border: 1px solid var(--t-gray-s); background: var(--t-gray-f);
+  border-radius: 2px; padding: 6px 10px; text-align: center; line-height: 1.3;
+  font-size: 12px;
+}
+.node > b, .node > strong { display: block; font-weight: 600; color: var(--ink); font-size: 12.5px; }
+.node > small { display: block; color: var(--muted); font-size: 11px; }
+.node.mono > b { font-family: var(--f-mono); font-weight: 500; }
+.node.left { text-align: left; }
+.node.white  { background: #fff; border-color: #3f4651; }
+.node.hatch  { background: repeating-linear-gradient(135deg, #f1efe8 0 5px, #e6e3d9 5px 6px); border-color: #d4d0c4; color: var(--muted); }
+.node.dashed { border-style: dashed; }
+.t-blue   { --nf: var(--t-blue-f);   --ns: var(--t-blue-s);   --nt: var(--t-blue-t); }
+.t-teal   { --nf: var(--t-teal-f);   --ns: var(--t-teal-s);   --nt: var(--t-teal-t); }
+.t-violet { --nf: var(--t-violet-f); --ns: var(--t-violet-s); --nt: var(--t-violet-t); }
+.t-indigo { --nf: var(--t-indigo-f); --ns: var(--t-indigo-s); --nt: var(--t-indigo-t); }
+.t-amber  { --nf: var(--t-amber-f);  --ns: var(--t-amber-s);  --nt: var(--t-amber-t); }
+.t-green  { --nf: var(--t-green-f);  --ns: var(--t-green-s);  --nt: var(--t-green-t); }
+.t-olive  { --nf: var(--t-olive-f);  --ns: var(--t-olive-s);  --nt: var(--t-olive-t); }
+.t-rose   { --nf: var(--t-rose-f);   --ns: var(--t-rose-s);   --nt: var(--t-rose-t); }
+.t-plum   { --nf: var(--t-plum-f);   --ns: var(--t-plum-s);   --nt: var(--t-plum-t); }
+.t-gray   { --nf: var(--t-gray-f);   --ns: var(--t-gray-s);   --nt: var(--t-gray-t); }
+.node[class*="t-"] { background: var(--nf); border-color: var(--ns); }
+.node.strong[class*="t-"] { border-width: 1.5px; }
+/* small numbered chips, e.g. commit seqs:  <span class="chip t-blue">13</span> */
+.chip {
+  display: inline-block; min-width: 24px; padding: 2px 6px; text-align: center;
+  font: 500 10.5px/1.4 var(--f-mono); border: 1px solid var(--ns, var(--t-gray-s));
+  background: var(--nf, var(--t-gray-f)); color: var(--nt, var(--ink)); border-radius: 3px;
+}
+/* circled step number: <span class="step">3</span> */
+.step {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 17px; height: 17px; border-radius: 50%; border: 1px solid var(--ink);
+  font: 500 9.5px/1 var(--f-mono); color: var(--ink); background: var(--paper); vertical-align: middle;
+}
+.tag {
+  display: inline-block; padding: 1px 6px; font: 500 10px/1.4 var(--f-mono); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--c-rose); border: 1px solid var(--c-rose); background: var(--t-rose-f); border-radius: 2px;
+}
+.flow-arrow { flex: 0 0 auto !important; align-self: center; color: var(--muted); font: 400 14px var(--f-mono); }
+
+/* key / legend list beside a plate (cover style) */
+.key { list-style: none; margin: 0; padding: 0; font-size: 11px; }
+.key li { display: grid; grid-template-columns: 22px 1fr; column-gap: 6px; margin-bottom: 6px; }
+.key li .step { grid-row: span 2; }
+.key li b { font: 500 10.5px/1.2 var(--f-mono); letter-spacing: .15em; text-transform: uppercase; }
+.key li i { font: italic 400 11px/1.25 var(--f-serif); color: var(--muted); }
+
+/* small multiples strip (cover FIG. 2..5 style) */
+.mini-figs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+.mini-figs .mini-head { font: 500 10px/1.3 var(--f-mono); letter-spacing: .2em; text-transform: uppercase; margin-bottom: 8px; }
+.mini-figs .mini-code { font: 400 9.5px/1.4 var(--f-mono); color: var(--muted); margin-top: 8px; }
+.mini-figs .mini-cap  { font: italic 400 11.5px/1.35 var(--f-serif); color: var(--muted); }
+
+/* ---------- inline SVG diagram kit ----------
+   Use these classes inside <svg> so diagrams match the theme. */
+svg.diagram { display: block; width: 100%; height: auto; font-family: "Source Sans 3", sans-serif; }
+svg.diagram text { fill: #161d27; font-size: 12px; }
+svg.diagram .mono { font-family: "JetBrains Mono", monospace; }
+svg.diagram .lbl  { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .2em; fill: #878e97; text-transform: uppercase; }
+svg.diagram .sub  { font-size: 10.5px; fill: #5f6772; }
+svg.diagram .it   { font-family: "Source Serif 4", serif; font-style: italic; fill: #5f6772; }
+svg.diagram .box  { fill: #eeece2; stroke: #cfcabd; stroke-width: 1; }
+svg.diagram .box.white  { fill: #fff; stroke: #3f4651; }
+svg.diagram .box.blue   { fill: #eaf0f5;   stroke: #7194b0; }
+svg.diagram .box.teal   { fill: #e8f1f2;   stroke: #6aa7ad; }
+svg.diagram .box.violet { fill: #efecf5; stroke: #a99dc6; }
+svg.diagram .box.indigo { fill: #eceef7; stroke: #7c87b3; }
+svg.diagram .box.amber  { fill: #f6efe3;  stroke: #b08f61; }
+svg.diagram .box.green  { fill: #eaf2ee;  stroke: #9cc2b5; }
+svg.diagram .box.olive  { fill: #e8ecda;  stroke: #b9c6a8; }
+svg.diagram .box.rose   { fill: #f7ecef;   stroke: #c98d9f; }
+svg.diagram .box.plum   { fill: #f4ecf2;   stroke: #c8b1c5; }
+svg.diagram .wire  { fill: none; stroke: #3f4651; stroke-width: 1; }
+svg.diagram .wire.teal  { stroke: #10707a; }
+svg.diagram .wire.amber { stroke: #8a5a18; }
+svg.diagram .wire.rose  { stroke: #97405a; }
+svg.diagram .wire.plum  { stroke: #7a3f78; }
+svg.diagram .dash  { stroke-dasharray: 4 3; }
+svg.diagram .life  { stroke: #9aa0a6; stroke-width: 1; stroke-dasharray: 2 3; }
+svg.diagram .t-blue   { fill: #2a5f88; }
+svg.diagram .t-teal   { fill: #10707a; }
+svg.diagram .t-amber  { fill: #8a5a18; }
+svg.diagram .t-rose   { fill: #97405a; }
+svg.diagram .t-plum   { fill: #7a3f78; }
+svg.diagram .t-muted  { fill: #5f6772; }
+
+/* ---------- misc ---------- */
+hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
+ul, ol { padding-left: 22px; margin: 0 0 .9em; }
+li { margin-bottom: .25em; }
+blockquote { margin: 16px 0; padding: 4px 0 4px 16px; border-left: 2px solid var(--rule); font: italic 400 15.5px/1.5 var(--f-serif); color: #333b46; }
+.kpis { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 20px; }
+.kpis > .kpi { flex: 1 1 130px; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--accent); padding: 10px 12px; break-inside: avoid; }
+.kpi .v { font: 700 24px/1.1 var(--f-head); letter-spacing: -.02em; }
+.kpi .k { font: 400 9.5px/1.3 var(--f-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.screen-only { }
+.print-only { display: none; }
+
+/* ---------- small screens ---------- */
+@media screen and (max-width: 640px) {
+  body { font-size: 15px; }
+  .manual > section, .manual > nav { padding-left: 16px; padding-right: 16px; }
+  .cover { padding: 32px 16px !important; }
+  .cover-top, .plate-bar { flex-direction: column; gap: 8px; }
+  .cover-meta { text-align: left; }
+  .plate-grid { grid-template-columns: 1fr; }
+  .chapter, .toc { padding-top: 48px; }
+  .dek { font-size: 16px; }
+  .part { padding: 64px 16px 56px !important; }
+  .part .dek { font-size: 16px; }
+  .kpis > .kpi { flex-basis: 40%; }
+  .cover-title h1 { font-size: 42px; }
+  .cover-title .subtitle { font-size: 22px; }
+  .part h1 { font-size: 34px; }
+  .part-numeral { font-size: 160px; bottom: -20px; }
+  .mini-figs { grid-template-columns: repeat(2, 1fr); }
+  .fig, .code, table { overflow-x: auto; }
+  table { display: block; }
+}
+
+/* ==========================================================================
+   PRINT / PDF  (US Letter, matches the reference manual)
+   build.py injects the running-head strings:
+     @top-right "<doc-short>"  and  @bottom-left "<doc-footer>"
+   ========================================================================== */
+@media print {
+  html, body { background: var(--paper); }
+  body { font-size: 10.6pt; line-height: 1.6; }
+  .screen-only { display: none !important; }
+  .print-only { display: block; }
+
+  .manual > section, .manual > nav { padding: 0; }
+  .chapter, .toc { max-width: none; padding: 0 !important; margin: 0; }
+  .chapter { break-before: page; }
+  .chapter.continue { break-before: auto; }
+  .chapter h1 { string-set: section content(text); }
+  .chapter .sec-head { margin-top: 0; }
+  .chapter .sec-head h1 { font-size: 23pt; }
+
+  h1 { font-size: 23pt; }
+  h2 { font-size: 14pt; }
+  h3 { font-size: 11.5pt; }
+  .dek { font-size: 12.5pt; }
+
+  /* cover */
+  .cover { page: cover; min-height: 0; height: 9.5in; padding: 0 !important; max-width: none; break-after: page; }
+  .cover-title { margin-top: auto; }
+  .cover-title h1 { font-size: 44pt; }
+  .cover-title .subtitle { font-size: 22pt; }
+  .cover-title .lede { font-size: 11pt; }
+
+  /* toc */
+  .toc { page: front; break-after: page; }
+  .toc h1 { font-size: 24pt; }
+  .toc li a { font-size: 9.5pt; padding: 3.5pt 0; }
+  /* block layout + leader(): WeasyPrint will not resolve target-counter inside flex items */
+  .toc li a, .part li a { display: block; }
+  .toc li .n, .part li .n { display: inline-block; width: 30pt; }
+  .toc li .dots { display: none; }
+  .toc li a::after { content: leader(dotted) " " target-counter(attr(href url), page); color: #a9a597; }
+  .part li a::after { content: leader(" ") target-counter(attr(href url), page); }
+
+  /* part divider: full-bleed dark page */
+  .part { page: part; break-before: page; break-after: page; margin: 0; padding: 0 !important;
+          height: 11in; background: var(--night); position: relative; overflow: hidden; }
+  .part-inner { padding: 1.15in 0.95in 0; }
+  .part h1 { font-size: 34pt; }
+  .part .dek { font-size: 13pt; }
+  .part-numeral { right: 0.95in; bottom: 0.95in; font-size: 190pt; line-height: .8; }
+  .part-foot { display: flex; justify-content: space-between; position: absolute; left: 0.95in; right: 0.95in; bottom: 0.75in;
+               font: 400 7.5pt var(--f-mono); letter-spacing: .3em; text-transform: uppercase; color: #7d8794; z-index: 1; }
+
+  .kpis { flex-wrap: nowrap; }
+  .kpis > .kpi { flex: 1 1 0; min-width: 0; }
+  .fig, .code, .callout, .takeaways, table, .kpi { break-inside: avoid; }
+  .caption, .code-note { break-before: avoid; }
+  a.xref::after { content: "(p. " target-counter(attr(href url), page) ")"; }
+  pre { white-space: pre-wrap; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+}
+
+@page {
+  size: letter;
+  margin: 0.78in 0.95in 0.85in;
+  background: #faf8f3;
+  @top-left     { content: string(section); font: 400 7.5pt "Source Sans 3", sans-serif; color: #5f6772; vertical-align: bottom; padding-bottom: 8pt; }
+  @bottom-right { content: counter(page); font: 400 9pt "JetBrains Mono", monospace; color: #161d27; vertical-align: top; padding-top: 14pt; }
+}
+@page cover { margin: 0.75in 0.95in 0.6in; @top-left { content: none; } @top-right { content: none; } @bottom-left { content: none; } @bottom-right { content: none; } }
+@page part  { margin: 0; background: #0e1826; @top-left { content: none; } @top-right { content: none; } @bottom-left { content: none; } @bottom-right { content: none; } }
+@page front { @top-left { content: none; } @top-right { content: none; } @bottom-left { content: none; } @bottom-right { content: counter(page, lower-roman); } }
+
+@page{@top-right{content:"Ledger Service";font:400 7.5pt 'Source Sans 3',sans-serif;color:#5f6772;vertical-align:bottom;padding-bottom:8pt;}@bottom-left{content:"LEDGER SERVICE / TECHNICAL MANUAL";font:400 6.8pt 'JetBrains Mono',monospace;letter-spacing:.22em;color:#878e97;vertical-align:top;padding-top:15pt;}}@page front{@top-right{content:none}@bottom-left{content:none}}@page cover{@top-right{content:none}@bottom-left{content:none}}@page part{@top-right{content:none}@bottom-left{content:none}}.part-foot .doc::before{content:"Ledger Service / Technical Manual";}
+</style>
+</head>
+<body class="manual">
+
+<!-- =====================================================================
+     COVER  — brand, meta block, a "plate" (hero diagram + key), title block
+     ===================================================================== -->
+<section class="cover">
+  <div class="cover-top">
+    <div class="brand"><span class="brand-mark"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M3 4.5h10M3 8h10M3 11.5h6" stroke="#faf8f3" stroke-width="1.8" stroke-linecap="round"/><circle cx="12.2" cy="11.5" r="1.3" fill="#faf8f3"/></svg></span>Ledger Service</div>
+    <div class="cover-meta">Technical Manual<br><strong>ledger-svc 2.4.0 · Engineering Edition · 2026.10</strong></div>
+  </div>
+  <div class="plate-bar"><span>Plate I · A write, and what survives it</span><span>Two replicas · one log</span></div>
+
+  <div class="plate">
+    <div class="plate-grid">
+      <svg class="diagram" viewBox="0 0 560 230" role="img" aria-label="Timeline of two replicas writing to one log"><style>
+:root { display: block; width: 100%; height: auto; font-family: "Source Sans 3", sans-serif; }
+text { fill: #161d27; font-size: 12px; }
+.mono { font-family: "JetBrains Mono", monospace; }
+.lbl  { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .2em; fill: #878e97; text-transform: uppercase; }
+.sub  { font-size: 10.5px; fill: #5f6772; }
+.it   { font-family: "Source Serif 4", serif; font-style: italic; fill: #5f6772; }
+.box  { fill: #eeece2; stroke: #cfcabd; stroke-width: 1; }
+.box.white  { fill: #fff; stroke: #3f4651; }
+.box.blue   { fill: #eaf0f5;   stroke: #7194b0; }
+.box.teal   { fill: #e8f1f2;   stroke: #6aa7ad; }
+.box.violet { fill: #efecf5; stroke: #a99dc6; }
+.box.indigo { fill: #eceef7; stroke: #7c87b3; }
+.box.amber  { fill: #f6efe3;  stroke: #b08f61; }
+.box.green  { fill: #eaf2ee;  stroke: #9cc2b5; }
+.box.olive  { fill: #e8ecda;  stroke: #b9c6a8; }
+.box.rose   { fill: #f7ecef;   stroke: #c98d9f; }
+.box.plum   { fill: #f4ecf2;   stroke: #c8b1c5; }
+.wire  { fill: none; stroke: #3f4651; stroke-width: 1; }
+.wire.teal  { stroke: #10707a; }
+.wire.amber { stroke: #8a5a18; }
+.wire.rose  { stroke: #97405a; }
+.wire.plum  { stroke: #7a3f78; }
+.dash  { stroke-dasharray: 4 3; }
+.life  { stroke: #9aa0a6; stroke-width: 1; stroke-dasharray: 2 3; }
+.t-blue   { fill: #2a5f88; }
+.t-teal   { fill: #10707a; }
+.t-amber  { fill: #8a5a18; }
+.t-rose   { fill: #97405a; }
+.t-plum   { fill: #7a3f78; }
+.t-muted  { fill: #5f6772; }
+
+</style>
+        <text class="lbl" x="0" y="18" style="fill:#2a5f88">REPLICA A</text>
+        <line class="wire" x1="0" y1="50" x2="560" y2="50"/>
+        <rect class="box blue" x="40"  y="40" width="30" height="20" rx="2"/><text class="mono" x="55"  y="54" text-anchor="middle" font-size="10">12</text>
+        <rect class="box blue" x="90"  y="40" width="30" height="20" rx="2"/><text class="mono" x="105" y="54" text-anchor="middle" font-size="10">13</text>
+        <rect class="box blue" x="140" y="40" width="30" height="20" rx="2"/><text class="mono" x="155" y="54" text-anchor="middle" font-size="10">14</text>
+        <rect class="box rose" x="310" y="40" width="30" height="20" rx="2"/><text class="mono t-rose" x="325" y="54" text-anchor="middle" font-size="10">15</text>
+        <text class="it" x="300" y="34" font-size="11">replayed</text>
+        <rect x="40" y="72" width="230" height="10" fill="#9a6a2c"/>
+        <rect x="120" y="72" width="150" height="10" fill="url(#hatch)" stroke="#9a6a2c"/>
+        <text class="mono t-amber" x="0" y="81" font-size="9.5">apply</text>
+
+        <text class="lbl" x="0" y="122" style="fill:#10707a">REPLICA B</text>
+        <line class="wire" x1="0" y1="152" x2="560" y2="152"/>
+        <rect class="box teal" x="60"  y="142" width="30" height="20" rx="2"/><text class="mono" x="75"  y="156" text-anchor="middle" font-size="10">16</text>
+        <rect class="box teal" x="380" y="142" width="30" height="20" rx="2"/><text class="mono" x="395" y="156" text-anchor="middle" font-size="10">17</text>
+        <rect class="box teal" x="460" y="142" width="30" height="20" rx="2"/><text class="mono" x="475" y="156" text-anchor="middle" font-size="10">18</text>
+
+        <path d="M285 10 l8 12 l-8 12 l8 12 l-8 12 l8 12 l-8 12 l8 12 l-8 12 l8 12 l-8 12 l8 12 l-8 12 l8 12 l-8 12 l8 12" class="wire rose" fill="none"/>
+        <rect class="box rose" x="262" y="0" width="56" height="16" rx="1"/><text class="mono t-rose" x="290" y="12" text-anchor="middle" font-size="9.5">CRASH</text>
+
+        <rect class="box teal" x="0" y="196" width="560" height="22" rx="2"/>
+        <text class="mono" x="14" y="211" font-size="10" style="fill:#10707a">ledger.log   accounts · entries · holds · snapshots</text>
+        <defs><pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#f4efe6"/><line x1="0" y1="0" x2="0" y2="5" stroke="#c9b48f" stroke-width="1.5"/></pattern></defs>
+      </svg>
+      <div>
+        <div class="label" style="margin-bottom:8px">Key</div>
+        <ol class="key">
+          <li><span class="step">1</span><b>Log seq</b><i>one atomic append per write</i></li>
+          <li><span class="step">2</span><b>Apply</b><i>white pending, solid running</i></li>
+          <li><span class="step">3</span><b>Crash</b><i>replica A dies mid-apply</i></li>
+          <li><span class="step">4</span><b>Replay</b><i>the open write is re-run once</i></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="mini-figs">
+      <div><div class="mini-head">Fig. 2 · Holds</div><span class="chip t-blue">7</span> → <span class="chip t-amber">8</span><div class="mini-cap">A hold reserves funds until it settles.</div></div>
+      <div><div class="mini-head">Fig. 3 · Snapshots</div><span class="chip t-gray">older</span> <span class="chip t-teal">18</span><div class="mini-cap">Readers start from the newest snapshot.</div></div>
+      <div><div class="mini-head">Fig. 4 · Replay</div><span class="chip t-rose">15</span><div class="mini-cap">Unsafe writes are not re-run.</div></div>
+      <div><div class="mini-head">Fig. 5 · Watchers</div><span class="chip t-indigo">commit</span><div class="mini-cap">Every client sees the same ops.</div></div>
+    </div>
+  </div>
+
+  <div class="cover-title">
+    <h1>Ledger Service</h1>
+    <div class="subtitle">Technical Manual</div>
+    <p class="lede">The double-entry ledger from the first write down to the stored rows: atomic appends, holds that settle exactly once, replay after a crash, snapshots, and the storage underneath.</p>
+    <div class="legend">
+      <span style="--dot:var(--c-blue)">Model</span>
+      <span style="--dot:var(--c-teal)">Writes</span>
+      <span style="--dot:var(--c-violet)">Accounts</span>
+      <span style="--dot:var(--c-green)">Holds</span>
+      <span style="--dot:var(--c-amber)">Replay</span>
+      <span style="--dot:var(--c-rose)">Failures</span>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     CONTENTS — one .toc-part per part; links must point at section ids
+     ===================================================================== -->
+<nav class="toc">
+  <h1>Contents</h1>
+  <div class="toc-part c-blue">
+    <div class="toc-part-title"><span class="num">1</span>The Model</div>
+    <ol>
+      <li><a href="#s-1-1"><span class="n">1.1</span><span class="t">What the ledger is for</span><span class="dots"></span></a></li>
+      <li><a href="#s-1-2"><span class="n">1.2</span><span class="t">The life of one write</span><span class="dots"></span></a></li>
+    </ol>
+  </div>
+  <div class="toc-part c-teal">
+    <div class="toc-part-title"><span class="num">2</span>Operations</div>
+    <ol>
+      <li><a href="#s-2-1"><span class="n">2.1</span><span class="t">Running it in production</span><span class="dots"></span></a></li>
+    </ol>
+  </div>
+</nav>
+
+<!-- =====================================================================
+     PART DIVIDER — dark full page. Accent comes from the c-* class.
+     ===================================================================== -->
+<section class="part c-blue" id="part-1">
+  <div class="part-inner">
+    <div class="part-label">Part 1</div>
+    <h1>The Model</h1>
+    <p class="dek">A ledger whose every visible balance is a stored append, so a process that dies mid-write is just a pause.</p>
+    <div class="part-rule"></div>
+    <ol>
+      <li><a href="#s-1-1"><span class="n">1.1</span><span class="t">What the ledger is for</span></a></li>
+      <li><a href="#s-1-2"><span class="n">1.2</span><span class="t">The life of one write</span></a></li>
+    </ol>
+  </div>
+  <div class="part-numeral">01</div>
+  <div class="part-foot"><span class="doc"></span><span>Part 1</span></div>
+</section>
+
+<!-- =====================================================================
+     SECTION — sec-num, h1, italic dek, then body
+     ===================================================================== -->
+<section class="chapter c-blue" id="s-1-1">
+  <header class="sec-head">
+    <div class="sec-num">1.1</div>
+    <h1>What the ledger is for</h1>
+    <p class="dek">Money moves in pairs. The ledger stores both halves in one append, and nothing is shown that was not appended.</p>
+  </header>
+
+  <p>This manual documents <code>ledger-svc</code> at version 2.4.0, from repository <code>acme/ledger</code> at commit <code>5b6c792</code>. It follows the service from its one rule down to the rows on disk, and every record shown was captured from a real run <cite>NOTES.md §2</cite>.</p>
+
+  <h2>The problem: four kinds of state</h2>
+  <p>A payment touches more than a balance. Before the ledger, each of these lived somewhere different:</p>
+  <div class="defs">
+    <p><b>Entries</b> — the debit and credit lines, appended in pairs <cite>spec §3</cite>.</p>
+    <p><b>Holds</b> — reserved funds that settle or release exactly once. See <a class="xref" href="#s-1-2">the life of one write</a>.</p>
+    <p><b>Snapshots</b> — periodic balances so readers never scan the whole log.</p>
+  </div>
+
+  <div class="callout warn">
+    <span class="label">Experimental</span>
+    <p>The README opens with one line of status: “The API changes without notice between releases.” Everything here is true of 2.4.0.</p>
+  </div>
+
+  <div class="callout rule">
+    <span class="label">Core rule</span>
+    <p>“A write atomically appends both entries and any hold change. Only appended state is observable.”</p>
+  </div>
+
+  <figure class="fig">
+    <figcaption class="fig-head"><span class="no">Fig. 1.1</span><span class="title">The layers of the service</span><span class="kind">Layers</span></figcaption>
+    <div class="lane">Your process</div>
+    <div class="node"><b>Host application</b><small>Ledger.open(store) · post() · hold() · watch()</small></div>
+    <div class="lane">Ledger · src/ledger</div>
+    <div class="group">
+      <div class="row">
+        <div class="node t-blue"><b>Accounts</b><small>open, close, limits</small></div>
+        <div class="node t-violet"><b>Postings</b><small>pairs, validation</small></div>
+        <div class="node t-amber"><b>Holds</b><small>reserve, settle</small></div>
+        <div class="node t-indigo"><b>Views</b><small>balances, watch</small></div>
+      </div>
+      <div class="node t-amber mono" style="margin-top:8px"><b>built-in jobs: snapshot · compact · reconcile</b></div>
+    </div>
+    <div class="lane">Storage · one backend per ledger</div>
+    <div class="row">
+      <div class="node t-teal"><b>MemoryStore</b><small>nothing persisted</small></div>
+      <div class="node t-teal"><b>SqliteStore</b><small>one database file</small></div>
+      <div class="node t-teal"><b>LogStore</b><small>append-only files</small></div>
+    </div>
+  </figure>
+  <p class="caption"><b>The host drives the ledger, and the ledger appends through one store.</b> The right column of options is omitted. After src/ledger/index.ts.</p>
+
+  <h2>How the sources rank</h2>
+  <table>
+    <thead><tr><th>Source</th><th>Path</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td>Source code</td><td><code>src/**</code></td><td>every type, default and field name</td></tr>
+      <tr><td>Spec</td><td><code>docs/spec.md</code></td><td>every rule, quoted exactly; cited as <cite>spec §5.2</cite></td></tr>
+      <tr><td>Tests</td><td><code>test/*.test.ts</code></td><td>exact behaviour at the edges</td></tr>
+    </tbody>
+  </table>
+
+  <div class="takeaways">
+    <span class="label">What this means for you</span>
+    <ul>
+      <li>Ask one question of any design: is the balance you show appended? If not, it does not exist yet.</li>
+      <li>Change related things in one write, so a crash can never split them.</li>
+      <li>Never call the network inside a write callback.</li>
+    </ul>
+  </div>
+
+  <div class="sources"><b>Sources:</b> docs/spec.md (§1, §3); src/ledger/index.ts; test/holds.test.ts (“settles once”); NOTES.md §2</div>
+</section>
+
+<section class="chapter c-blue" id="s-1-2">
+  <header class="sec-head">
+    <div class="sec-num">1.2</div>
+    <h1>The life of one write</h1>
+    <p class="dek">One payment, eight appends, and the order in which a reader can see them.</p>
+  </header>
+
+  <p>A <span class="term">write</span> is an atomic append: everything in it is stored together, or nothing is. Here is the smallest program that posts one payment:</p>
+
+  <div class="code">
+    <div class="code-head">Quick start, minimal<span class="path">examples/00-post.ts</span><span class="lang">TS</span></div>
+<pre><span class="tk-k">const</span> ledger = <span class="tk-k">await</span> Ledger.<span class="tk-f">open</span>(<span class="tk-k">new</span> SqliteStore(<span class="tk-s">"ledger.db"</span>));
+<span class="tk-k">await</span> ledger.<span class="tk-f">post</span>({
+  debit:  <span class="tk-s">"cash"</span>,
+  credit: <span class="tk-s">"revenue"</span>,
+  amount: <span class="tk-n">4200</span>,   <span class="tk-c">// cents</span>
+});</pre>
+  </div>
+  <p class="code-note">Run with <code>npx tsx examples/00-post.ts</code>; the database is created on first open.</p>
+
+  <figure class="fig">
+    <figcaption class="fig-head"><span class="no">Fig. 1.2</span><span class="title">One payment, appends 1–4</span><span class="kind">Sequence</span></figcaption>
+    <svg class="diagram" viewBox="0 0 640 300" role="img" aria-label="Sequence diagram of one payment"><style>
+:root { display: block; width: 100%; height: auto; font-family: "Source Sans 3", sans-serif; }
+text { fill: #161d27; font-size: 12px; }
+.mono { font-family: "JetBrains Mono", monospace; }
+.lbl  { font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .2em; fill: #878e97; text-transform: uppercase; }
+.sub  { font-size: 10.5px; fill: #5f6772; }
+.it   { font-family: "Source Serif 4", serif; font-style: italic; fill: #5f6772; }
+.box  { fill: #eeece2; stroke: #cfcabd; stroke-width: 1; }
+.box.white  { fill: #fff; stroke: #3f4651; }
+.box.blue   { fill: #eaf0f5;   stroke: #7194b0; }
+.box.teal   { fill: #e8f1f2;   stroke: #6aa7ad; }
+.box.violet { fill: #efecf5; stroke: #a99dc6; }
+.box.indigo { fill: #eceef7; stroke: #7c87b3; }
+.box.amber  { fill: #f6efe3;  stroke: #b08f61; }
+.box.green  { fill: #eaf2ee;  stroke: #9cc2b5; }
+.box.olive  { fill: #e8ecda;  stroke: #b9c6a8; }
+.box.rose   { fill: #f7ecef;   stroke: #c98d9f; }
+.box.plum   { fill: #f4ecf2;   stroke: #c8b1c5; }
+.wire  { fill: none; stroke: #3f4651; stroke-width: 1; }
+.wire.teal  { stroke: #10707a; }
+.wire.amber { stroke: #8a5a18; }
+.wire.rose  { stroke: #97405a; }
+.wire.plum  { stroke: #7a3f78; }
+.dash  { stroke-dasharray: 4 3; }
+.life  { stroke: #9aa0a6; stroke-width: 1; stroke-dasharray: 2 3; }
+.t-blue   { fill: #2a5f88; }
+.t-teal   { fill: #10707a; }
+.t-amber  { fill: #8a5a18; }
+.t-rose   { fill: #97405a; }
+.t-plum   { fill: #7a3f78; }
+.t-muted  { fill: #5f6772; }
+
+</style>
+      <defs><marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3f4651"/></marker>
+            <marker id="arr-t" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#10707a"/></marker></defs>
+      <!-- actors -->
+      <rect class="box white" x="40"  y="6" width="100" height="32" rx="2"/><text class="lbl" x="90"  y="26" text-anchor="middle" style="fill:#161d27">HOST</text>
+      <rect class="box green" x="190" y="6" width="100" height="32" rx="2"/><text class="lbl" x="240" y="26" text-anchor="middle" style="fill:#161d27">BANK API</text>
+      <rect class="box blue"  x="340" y="6" width="100" height="32" rx="2"/><text class="lbl" x="390" y="26" text-anchor="middle" style="fill:#161d27">LEDGER</text>
+      <rect class="box teal"  x="500" y="6" width="100" height="32" rx="2"/><text class="lbl" x="550" y="26" text-anchor="middle" style="fill:#161d27">STORE</text>
+      <line class="life" x1="90"  y1="38" x2="90"  y2="292"/>
+      <line class="life" x1="240" y1="38" x2="240" y2="292"/>
+      <line class="life" x1="390" y1="38" x2="390" y2="292"/>
+      <line class="life" x1="550" y1="38" x2="550" y2="292"/>
+      <!-- messages -->
+      <line class="wire" x1="90" y1="70" x2="388" y2="70" marker-end="url(#arr)"/>
+      <text class="mono" x="240" y="64" text-anchor="middle">post()</text>
+      <text class="sub" x="240" y="84" text-anchor="middle">cash → revenue · 4200</text>
+
+      <circle cx="20" cy="118" r="8" fill="none" stroke="#161d27"/><text class="mono" x="20" y="121.5" text-anchor="middle" font-size="9">1</text>
+      <line class="wire teal" x1="390" y1="118" x2="548" y2="118" marker-end="url(#arr-t)"/>
+      <text class="mono t-teal" x="470" y="112" text-anchor="middle">entry 7 · entry 8</text>
+      <text class="sub" x="470" y="132" text-anchor="middle">hold 9 pending</text>
+
+      <circle cx="20" cy="170" r="8" fill="none" stroke="#161d27"/><text class="mono" x="20" y="173.5" text-anchor="middle" font-size="9">2</text>
+      <line class="wire amber dash" x1="390" y1="170" x2="548" y2="170"/>
+      <text class="mono t-amber" x="470" y="164" text-anchor="middle">hold 9 running</text>
+
+      <line class="wire plum" x1="390" y1="210" x2="242" y2="210" marker-end="url(#arr)"/>
+      <text class="mono t-plum" x="316" y="204" text-anchor="middle">capture</text>
+
+      <circle cx="20" cy="258" r="8" fill="none" stroke="#161d27"/><text class="mono" x="20" y="261.5" text-anchor="middle" font-size="9">3</text>
+      <line class="wire teal" x1="390" y1="258" x2="548" y2="258" marker-end="url(#arr-t)" stroke-width="1.5"/>
+      <text class="mono t-teal" x="470" y="252" text-anchor="middle" font-weight="700">hold 9 → settled</text>
+      <text class="sub" x="470" y="274" text-anchor="middle">balance visible</text>
+    </svg>
+  </figure>
+  <p class="caption"><b>Appends 1–3 take the payment from post() to a settled hold.</b> From research/capture/sqlite-commits.txt.</p>
+
+  <h3>Appends 2–3: settling the hold</h3>
+  <p>The scheduler reserves hold 9 by rewriting it from <code>pending</code> to <code>running</code>, then calls the bank off the line. A crash between the two leaves an open hold that is replayed once on restart <a class="xref" href="#s-2-1">running it in production</a>.</p>
+
+  <div class="callout warn">
+    <span class="label">Fire and forget</span>
+    <p>Work started inside the callback and left running can still change the open write, and then fails once it settles. Await every call.</p>
+  </div>
+
+  <div class="sources"><b>Sources:</b> src/ledger/post.ts; src/holds/scheduler.ts; research/capture/sqlite-commits.txt</div>
+</section>
+
+<section class="part c-teal" id="part-2">
+  <div class="part-inner">
+    <div class="part-label">Part 2</div>
+    <h1>Operations</h1>
+    <p class="dek">What to watch, what to page on, and what the numbers looked like last quarter.</p>
+    <div class="part-rule"></div>
+    <ol>
+      <li><a href="#s-2-1"><span class="n">2.1</span><span class="t">Running it in production</span></a></li>
+    </ol>
+  </div>
+  <div class="part-numeral">02</div>
+  <div class="part-foot"><span class="doc"></span><span>Part 2</span></div>
+</section>
+
+<section class="chapter c-teal" id="s-2-1">
+  <header class="sec-head">
+    <div class="sec-num">2.1</div>
+    <h1>Running it in production</h1>
+    <p class="dek">Four numbers tell you whether the ledger is healthy; one tells you it is not.</p>
+  </header>
+
+  <div class="kpis">
+    <div class="kpi"><div class="v">99.98%</div><div class="k">Write success</div></div>
+    <div class="kpi"><div class="v">4.1 ms</div><div class="k">p50 append</div></div>
+    <div class="kpi"><div class="v">38 ms</div><div class="k">p99 append</div></div>
+    <div class="kpi"><div class="v">0</div><div class="k">Unsettled holds</div></div>
+  </div>
+
+  <h2>Settings and defaults</h2>
+  <table class="compact">
+    <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>See</th></tr></thead>
+    <tbody>
+      <tr><td><code>store</code></td><td><code>Store</code></td><td>required</td><td><a class="xref" href="#s-1-1">1.1</a></td></tr>
+      <tr><td><code>snapshotEvery</code></td><td><code>number</code></td><td><code>1000</code></td><td><a class="xref" href="#s-1-2">1.2</a></td></tr>
+      <tr><td><code>now</code></td><td><code>() =&gt; number</code></td><td><code>Date.now</code></td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <span class="label">Tip</span>
+    <p>Alert on unsettled holds older than five minutes, not on error rate: a stuck hold is the first sign of a poisoned store.</p>
+  </div>
+
+  <div class="takeaways">
+    <span class="label">What this means for you</span>
+    <ul>
+      <li>Page on stuck holds; dashboard everything else.</li>
+      <li>If storage fails in a way that may have written, close and reopen; do not retry.</li>
+    </ul>
+  </div>
+  <div class="sources"><b>Sources:</b> ops/runbook.md; dashboards/ledger.json (Q3 2026)</div>
+</section>
+
+</body>
+</html>
